@@ -8,12 +8,15 @@ Systems
 - RDBMS -> SQLite
 - Linux System –> WSL
 - Workflow Mgmt -> Github
-- Backend -> Python 
+- Backend -> Python
+- Frontend -> Tkinter/Electron (JS)
+- Integration -> Flask
 
 Libraries
-- Desktop UI
+- Desktop UI (X)
     - Tkinter 
     - PyQt
-    - Kivy
 - Tracking 
     - psutil
+
+Timeline
