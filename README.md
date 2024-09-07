@@ -19,4 +19,20 @@ Libraries
 - Tracking 
     - psutil
 
-Timeline
+Database Schema
+
+Tasks
+- taskID
+- categoryID
+- notificationID
+- title
+- dueDate
+- description
+
+Categories
+- categoryID
+- category
+
+Notifications
+- notificationID
+- audio
