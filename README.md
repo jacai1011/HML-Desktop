@@ -4,8 +4,16 @@ Requirements List
 - Desktop interactivity with items
 - Capability to track external app usage
 
-RDBMS -> SQLite
-Linux System –> WSL
-Workflow Mgmt -> Github
+Systems
+- RDBMS -> SQLite
+- Linux System –> WSL
+- Workflow Mgmt -> Github
+- Backend -> Python 
 
-
+Libraries
+- Desktop UI
+    - Tkinter 
+    - PyQt
+    - Kivy
+- Tracking 
+    - psutil
