@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment directory
+venv/
+env/
+
+# SQLite database files
+*.sqlite3
+*.db
+
+# Log files and databases
+*.log
+
+# PyInstaller files
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# PyCharm project files
+.idea/
+
+# VSCode settings
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Ignore environment variables file (if used)
+.env
