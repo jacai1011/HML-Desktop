@@ -1,27 +1,16 @@
 import sys
+from PyQt6 import QtWidgets, uic, QtCore
+from MainWindow import Ui_MainWindow
 
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
-
-
-# Subclass QMainWindow to customize your application's main window
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("My App")
-
-        button = QPushButton("Press Me!")
-
-        self.setFixedSize(QSize(400, 300))
-
-        # Set the central widget of the Window.
-        self.setCentralWidget(button)
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self, *args, obj=None, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
+        self.setupUi(self)
+        self.setWindowTitle("Today's Tasks")
 
 
-app = QApplication(sys.argv)
+app = QtWidgets.QApplication(sys.argv)
 
 window = MainWindow()
 window.show()
-
 app.exec()

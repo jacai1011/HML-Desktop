@@ -39,3 +39,7 @@ coverage.xml
 
 # Ignore environment variables file (if used)
 .env
+
+.TMP
+
+.ui
