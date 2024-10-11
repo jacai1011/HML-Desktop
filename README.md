@@ -9,18 +9,14 @@ Requirements List
 
 Systems
 - RDBMS -> SQLite
-- Linux System –> WSL
+- Workstation –> WSL2
 - Workflow Mgmt -> Github
 - Backend -> Python
-- Frontend -> PyQt5
-- Integration -> Flask
+- GUI -> PyQt6
 
 Libraries
-- Desktop UI (X)
-    - Tkinter 
+- Desktop UI
     - PyQt
-- Tracking 
-    - psutil
 
 Database Schema
 

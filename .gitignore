@@ -42,4 +42,8 @@ coverage.xml
 
 .TMP
 
-.ui
+*.ui
+
+.qtcreator/
+
+*.png
