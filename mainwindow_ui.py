@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'mainwindow.ui'
+# Form implementation generated from reading ui file '/home/workspace/HML/mainwindow.ui'
 #
 # Created by: PyQt6 UI code generator 6.7.1
 #
@@ -19,7 +19,7 @@ class Ui_MainWindow(object):
         self.pushButton.setGeometry(QtCore.QRect(40, 40, 51, 51))
         self.pushButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("/home/workspace/HML/Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButton.setIcon(icon)
         self.pushButton.setIconSize(QtCore.QSize(64, 64))
         self.pushButton.setObjectName("pushButton")
