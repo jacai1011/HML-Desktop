@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QIcon, QPixmap
 from CustomInputDialog import InputDialog
@@ -18,16 +18,34 @@ class InputRectangleDisplay(QWidget):
         self.input_dialog.canceled.connect(self.close)  # Connect the canceled signal to close the rectangle display
         self.layout.addWidget(self.input_dialog)  # Add the child widget to the layout
 
+        self.top_layout = QHBoxLayout()
+        self.middle_layout = QHBoxLayout()
         self.setLayout(self.layout)
 
     def paintEvent(self, event):
         painter = QPainter(self)
         
-        # Rectangle
+        # Rectangle Margins
         rect = self.rect().adjusted(5, 5, -5, -5)
 
-        # Fill
-        painter.setBrush(QBrush(Qt.GlobalColor.lightGray, Qt.BrushStyle.SolidPattern))
+        # Background Color
+        if self.data_submitted:
+            category = self.input_data[1]
+            if category == "Work":
+                background_color = QColor(255, 99, 71)  # Tomato red for Work
+            elif category == "Leisure":
+                background_color = QColor(135, 206, 235)  # Sky blue for Leisure
+            elif category == "Routine":
+                background_color = QColor(144, 238, 144)  # Light green for Routine
+            elif category == "Self-Work":
+                background_color = QColor(238, 130, 238)  # Violet for Self-Work
+            else:
+                background_color = Qt.GlobalColor.lightGray  # Default color
+        else:
+            background_color = Qt.GlobalColor.lightGray
+
+        # Fill rectangle with chosen background color
+        painter.setBrush(QBrush(background_color, Qt.BrushStyle.SolidPattern))
 
         # Border
         painter.setPen(QPen(Qt.GlobalColor.black, 3, Qt.PenStyle.SolidLine))
@@ -40,14 +58,6 @@ class InputRectangleDisplay(QWidget):
         painter.setPen(QPen(Qt.GlobalColor.black))
         font = QFont("Arial", 16)
         painter.setFont(font)
-
-        if self.data_submitted:
-            # Time
-            painter.drawText(rect, Qt.AlignmentFlag.AlignLeft, f"Category: {self.input_data[1]}")
-            
-            # Category Color
-            
-            # Resize based on Time taken
 
     def update_display(self, input_data):
         self.input_data = input_data
@@ -66,11 +76,43 @@ class InputRectangleDisplay(QWidget):
                 border: none;
             }
         """)
-        self.layout.addWidget(self.delete_button, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         
-        # 
+        # Activity Start Time
+        start_12hr = self.input_data[3].strftime("%I:%M %p")
+        time_label = QLabel(f"{start_12hr}")
+        time_label.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align the text to the left
+        time_label.setStyleSheet("""
+            QLabel {
+                font-size: 25px;
+            }
+        """)
+        self.top_layout.addWidget(time_label)
+        self.top_layout.addWidget(self.delete_button, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
+        self.top_layout.setContentsMargins(10, 20, 10, 0)
+        self.layout.addLayout(self.top_layout)
         
-        self.layout.setContentsMargins(20, 20, 20, 20)
+        # Activity Title
+        title = self.input_data[0]
+        title_label = QLabel(f"{title}")
+        title_label.setStyleSheet("""
+            QLabel {
+                font-size: 30px;
+            }
+        """)
+        self.middle_layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignTop)
+        self.middle_layout.setContentsMargins(10, 0, 10, 0)
+        self.layout.addLayout(self.middle_layout)
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        # Resize based on duration
+        duration = self.input_data[5]
+        hrs = round(duration.total_seconds() / 3600)
+        if hrs == 0:
+            height = 70
+        else:
+            height = hrs * 130
+        
+        self.setFixedHeight(height)
         
     def on_delete(self):
         self.close()

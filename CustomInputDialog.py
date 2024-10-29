@@ -1,7 +1,9 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from AnimatedToggle import AnimatedToggle
 from AmPmButton import AMPMButtonWidget
+from datetime import datetime, time
 import sys
+
 
 class InputDialog(QtWidgets.QWidget):
     submitted = QtCore.pyqtSignal(list)
@@ -30,8 +32,12 @@ class InputDialog(QtWidgets.QWidget):
         self.colon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.colon_label.setFixedSize(5, 30)
         self.start_hr = QtWidgets.QLineEdit(self)
+        self.start_hr.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.start_hr.setPlaceholderText("00")
         self.start_min = QtWidgets.QLineEdit(self)
-        validator = QtGui.QIntValidator(0, 99, self)
+        self.start_min.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.start_min.setPlaceholderText("00")
+        validator = QtGui.QIntValidator(0, 12, self)
         self.start_hr.setValidator(validator)
         self.start_min.setValidator(validator)
         self.start_hr.setMaxLength(2)
@@ -54,7 +60,11 @@ class InputDialog(QtWidgets.QWidget):
         self.colon_label.setFixedSize(5, 30)
         self.colon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.end_hr = QtWidgets.QLineEdit(self)
+        self.end_hr.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.end_hr.setPlaceholderText("00")
         self.end_min = QtWidgets.QLineEdit(self)
+        self.end_min.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.end_min.setPlaceholderText("00")
         self.end_hr.setValidator(validator)
         self.end_min.setValidator(validator)
         self.end_hr.setMaxLength(2)
@@ -99,29 +109,31 @@ class InputDialog(QtWidgets.QWidget):
         self.layout.addLayout(self.button_layout)
         
         self.setLayout(self.layout)
-
-    def get_input(self):
-        return [self.task_input.text(), self.category_button.currentText(), str(self.repeatable_toggle.isChecked()), 
-                self.start_hr.text(), self.start_min.text(), self.end_hr.text(), self.end_min.text(),
-                self.am_pm_start_state, self.am_pm_end_state]
     
     def on_ok(self):
         task_name = self.task_input.text()
-        start_hour = self.start_hr.text()
-        start_minute = self.start_min.text()
-        end_hour = self.end_hr.text()
-        end_min = self.end_min.text()
+        start_hour = self.handle_time_output(self.start_hr.text())
+        start_minute = self.handle_time_output(self.start_min.text())
+        end_hour = self.handle_time_output(self.end_hr.text())
+        end_minute = self.handle_time_output(self.end_min.text())
         category = self.category_button.currentText()
-        if start_hour and start_minute and end_hour and end_min and category:
-            if (category == "Routine" and task_name) or (category != "Routine"):
-                print(f"Task Name: {task_name}")
-                input_data = self.get_input()
-                self.submitted.emit(input_data)
-                self.close()   # Optionally clear inputs after submission
+        start_time = self.convert_24(start_hour, start_minute, self.am_pm_start_state)
+        end_time = self.convert_24(end_hour, end_minute, self.am_pm_end_state)
+        datetime1 = datetime.combine(datetime.today(), start_time)
+        datetime2 = datetime.combine(datetime.today(), end_time)
+        time_difference = datetime2 - datetime1
+        if category != '' and task_name:
+            if time_difference.total_seconds() < 0:
+                QtWidgets.QMessageBox.warning(self, "Input Error", "Invalid length of time.")
             else:
-                QtWidgets.QMessageBox.warning(self, "Input Error", "Please add task name for Routine tasks.")
+                print(f"Task Name: {start_time} {end_time}")
+                input_data = [task_name, category, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference]
+                self.submitted.emit(input_data)
+                self.close()
         else:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all required fields.")
+            
+        # error checking where task time/title does not overlap with another task 
 
     def on_cancel(self):
         self.canceled.emit()
@@ -132,4 +144,21 @@ class InputDialog(QtWidgets.QWidget):
     
     def handle_end_state(self, selected):
         self.am_pm_end_state = selected
+        
+    def handle_time_output(self, time):
+        if time == '':
+            return 0
+        else:
+            return int(time)
+            
+    def convert_24(self, hr, mi, ap):
+        
+        if ap == "AM" and hr == 12:
+            hr = hr - 12
+        
+        if ap == "PM" and hr != 12:
+            hr = hr + 12
+        
+        return time(hr, mi)
+
     

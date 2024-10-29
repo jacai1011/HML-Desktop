@@ -7,19 +7,15 @@ class AMPMButtonWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(AMPMButtonWidget, self).__init__(parent)
 
-        # Create AM and PM buttons
         self.am_button = QtWidgets.QPushButton("AM", self)
         self.pm_button = QtWidgets.QPushButton("PM", self)
 
-        # Set default styles
         self.am_button.setStyleSheet("background-color: lightblue;")
         self.pm_button.setStyleSheet("background-color: white;")
 
-        # Connect signals
         self.am_button.clicked.connect(self.select_am)
         self.pm_button.clicked.connect(self.select_pm)
-
-        # Layout
+        
         layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.am_button)
         layout.addWidget(self.pm_button)
