@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
-from AnimatedToggle import AnimatedToggle
-from AmPmButton import AMPMButtonWidget
+from app.widgets.task_widgets.animated_toggle import AnimatedToggle
+from app.widgets.task_widgets.am_pm_button import AmPmButtonWidget
 from datetime import datetime, time
 import sys
 
@@ -44,7 +44,7 @@ class InputDialog(QtWidgets.QWidget):
         self.start_min.setMaxLength(2)
         self.start_hr.setFixedWidth(40)
         self.start_min.setFixedWidth(40)
-        self.am_pm_start = AMPMButtonWidget(self)
+        self.am_pm_start = AmPmButtonWidget(self)
         self.am_pm_start.time_selected.connect(self.handle_start_state)
         self.am_pm_start.setFixedSize(self.am_pm_start.sizeHint())
         self.start_time_layout.addWidget(self.start_hr)
@@ -71,7 +71,7 @@ class InputDialog(QtWidgets.QWidget):
         self.end_min.setMaxLength(2)
         self.end_hr.setFixedWidth(40)
         self.end_min.setFixedWidth(40)
-        self.am_pm_end = AMPMButtonWidget(self)
+        self.am_pm_end = AmPmButtonWidget(self)
         self.am_pm_end.time_selected.connect(self.handle_end_state)
         self.am_pm_end.setFixedSize(self.am_pm_end.sizeHint())
         self.end_time_layout.addWidget(self.end_hr)

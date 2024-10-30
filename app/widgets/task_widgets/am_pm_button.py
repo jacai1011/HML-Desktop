@@ -1,11 +1,11 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 import sys
 
-class AMPMButtonWidget(QtWidgets.QWidget):
+class AmPmButtonWidget(QtWidgets.QWidget):
     time_selected = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
-        super(AMPMButtonWidget, self).__init__(parent)
+        super(AmPmButtonWidget, self).__init__(parent)
 
         self.am_button = QtWidgets.QPushButton("AM", self)
         self.pm_button = QtWidgets.QPushButton("PM", self)

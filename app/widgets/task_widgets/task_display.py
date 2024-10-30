@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QIcon, QPixmap
-from CustomInputDialog import InputDialog
+from app.widgets.task_widgets.task_input import InputDialog
 import sys
 
 class InputRectangleDisplay(QWidget):
@@ -67,7 +67,7 @@ class InputRectangleDisplay(QWidget):
         # Delete Button
         self.delete_button = QPushButton(self)
         self.delete_button.clicked.connect(self.on_delete)
-        icon = QIcon(QPixmap("Transparent_X.png"))
+        icon = QIcon(QPixmap("icons/Transparent_X.png"))
         self.delete_button.setIcon(icon)
         self.delete_button.setIconSize(QSize(30, 30))
         self.delete_button.setStyleSheet("""
@@ -83,7 +83,7 @@ class InputRectangleDisplay(QWidget):
         time_label.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align the text to the left
         time_label.setStyleSheet("""
             QLabel {
-                font-size: 25px;
+                font-size: 20px;
             }
         """)
         self.top_layout.addWidget(time_label)
@@ -108,9 +108,10 @@ class InputRectangleDisplay(QWidget):
         duration = self.input_data[5]
         hrs = round(duration.total_seconds() / 3600)
         if hrs == 0:
-            height = 70
+            self.top_layout.setContentsMargins(10, 10, 10, 0)
+            height = 100
         else:
-            height = hrs * 130
+            height = hrs * 150
         
         self.setFixedHeight(height)
         

@@ -1,7 +1,7 @@
 import sys
 from PyQt6 import QtWidgets, QtCore, QtGui
-from MainWindow import Ui_MainWindow
-from RectangleDisplay import InputRectangleDisplay
+from app.ui.MainWindow_ui import Ui_MainWindow
+from app.widgets.task_widgets.task_display import InputRectangleDisplay
     
         
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -19,6 +19,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Add timeline sidebar
         
         # Add go next button
+        
+        # Reorder blocks based on time
 
     def add_new_block(self, input_data):
         new_widget = InputRectangleDisplay(input_data)

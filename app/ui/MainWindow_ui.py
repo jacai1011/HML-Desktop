@@ -19,7 +19,7 @@ class Ui_MainWindow(object):
         self.pushButton.setGeometry(QtCore.QRect(40, 40, 51, 51))
         self.pushButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButton.setIcon(icon)
         self.pushButton.setIconSize(QtCore.QSize(64, 64))
         self.pushButton.setObjectName("pushButton")
