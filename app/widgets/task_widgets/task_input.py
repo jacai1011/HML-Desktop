@@ -2,6 +2,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from app.widgets.task_widgets.animated_toggle import AnimatedToggle
 from app.widgets.task_widgets.am_pm_button import AmPmButtonWidget
 from datetime import datetime, time
+from db.db_handler import DatabaseHandler
 import sys
 
 
@@ -126,10 +127,17 @@ class InputDialog(QtWidgets.QWidget):
             if time_difference.total_seconds() < 0:
                 QtWidgets.QMessageBox.warning(self, "Input Error", "Invalid length of time.")
             else:
-                print(f"Task Name: {start_time} {end_time}")
-                input_data = [task_name, category, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference]
-                self.submitted.emit(input_data)
-                self.close()
+                self.db_handler = DatabaseHandler()
+                self.category_id = self.db_handler.get_category_id(category)[0]
+                check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
+                if check:
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "Invalid Time")
+                else:
+                    output = self.db_handler.get_all_tasks()
+                    print(output)
+                    input_data = self.db_handler.get_all_tasks()[-1]
+                    self.submitted.emit(input_data)
+                    self.close()
         else:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all required fields.")
             

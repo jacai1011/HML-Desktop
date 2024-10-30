@@ -21,22 +21,19 @@ Libraries
 Database Schema
 
 Tasks
-- taskID
-- categoryID
-- notificationID
+- task_id
+- category_id
 - title
-- dueDate
-- description
+- repeatable
+- start_time
+- end_time
+- duration
 
 Categories
-- categoryID
+- category_id
 - category
 
-Notifications
-- notificationID
-- audio
-
-Needed to run:
+Maybe needed to run:
 export DISPLAY=$(grep -oP '(?<=nameserver\s).+' /etc/resolv.conf):0
 export QT_QPA_PLATFORM=xcb
 export QT_XCB_GL_INTEGRATION=none

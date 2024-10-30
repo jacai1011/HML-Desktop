@@ -2,6 +2,8 @@ from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHB
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QIcon, QPixmap
 from app.widgets.task_widgets.task_input import InputDialog
+from db.db_handler import DatabaseHandler
+from datetime import datetime, timedelta
 import sys
 
 class InputRectangleDisplay(QWidget):
@@ -29,6 +31,7 @@ class InputRectangleDisplay(QWidget):
         rect = self.rect().adjusted(5, 5, -5, -5)
 
         # Background Color
+        # todo: fix inputdata grab connecty to db
         if self.data_submitted:
             category = self.input_data[1]
             if category == "Work":
@@ -64,6 +67,8 @@ class InputRectangleDisplay(QWidget):
         self.data_submitted = True
         self.update()
         
+        # self.db_handler = DatabaseHandler()
+    
         # Delete Button
         self.delete_button = QPushButton(self)
         self.delete_button.clicked.connect(self.on_delete)
@@ -78,8 +83,10 @@ class InputRectangleDisplay(QWidget):
         """)
         
         # Activity Start Time
-        start_12hr = self.input_data[3].strftime("%I:%M %p")
-        time_label = QLabel(f"{start_12hr}")
+        start_12hr = self.input_data[4]
+        time_obj = datetime.strptime(start_12hr, "%H:%M:%S")
+        time_12hr = time_obj.strftime("%I:%M %p")
+        time_label = QLabel(f"{time_12hr}")
         time_label.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align the text to the left
         time_label.setStyleSheet("""
             QLabel {
@@ -92,7 +99,7 @@ class InputRectangleDisplay(QWidget):
         self.layout.addLayout(self.top_layout)
         
         # Activity Title
-        title = self.input_data[0]
+        title = self.input_data[2]
         title_label = QLabel(f"{title}")
         title_label.setStyleSheet("""
             QLabel {
@@ -104,8 +111,8 @@ class InputRectangleDisplay(QWidget):
         self.layout.addLayout(self.middle_layout)
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
-        # Resize based on duration
-        duration = self.input_data[5]
+        time_parts = list(map(int, self.input_data[6].split(':')))
+        duration = timedelta(hours=time_parts[0], minutes=time_parts[1], seconds=time_parts[2])
         hrs = round(duration.total_seconds() / 3600)
         if hrs == 0:
             self.top_layout.setContentsMargins(10, 10, 10, 0)
