@@ -131,7 +131,7 @@ class InputDialog(QtWidgets.QWidget):
                 self.category_id = self.db_handler.get_category_id(category)[0]
                 check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
                 if check:
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "Invalid Time")
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                 else:
                     output = self.db_handler.get_all_tasks()
                     print(output)

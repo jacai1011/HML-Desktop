@@ -126,14 +126,41 @@ class DatabaseHandler:
         sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks"
         result = self.search_all_execute(sql=sql)
         return result
+
+    def load_tasks(self):
+        sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks ORDER BY start_time"
+        result = self.search_all_execute(sql=sql)
+        return result
+
+    def get_position(self, task_id):
+        sql = f"""
+            WITH RankedTasks AS (
+                SELECT task_id,
+                    start_time,
+                    ROW_NUMBER() OVER (ORDER BY start_time) AS position
+                FROM tasks
+            )
+            SELECT position
+            FROM RankedTasks
+            WHERE task_id = '{task_id}'
+        """
+        result = self.search_one_execute(sql=sql)
+        return result
+    
+    def delete_task(self, task_id):
+        sql = f"DELETE FROM tasks WHERE task_id = '{task_id}'"
+        result = self.insert_execute(sql=sql)
+        vacuum_sql = "VACUUM;"
+        self.insert_execute(sql=vacuum_sql)
+        return result
     
     # delete all at end of day
     def delete_all(self):
-        delete_sql = "DELETE FROM tasks WHERE repeatable != 1;"
-        self.insert_execute(sql=delete_sql)
+        delete_sql = "DELETE FROM tasks WHERE repeatable != 'True'"
+        result = self.insert_execute(sql=delete_sql)
 
         vacuum_sql = "VACUUM;"
-        result = self.insert_execute(sql=vacuum_sql)
+        self.insert_execute(sql=vacuum_sql)
 
         return result
 

@@ -20,19 +20,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.add_new_block)
         self.center()
         
+        self.input_data = self.db_handler.load_tasks()
+        for entry in self.input_data:
+            self.load_saved_tasks(entry)
+        
         # Add timeline sidebar
         
         # Add go next button
         
-        # Reorder blocks based on time
 
     def add_new_block(self):
         new_widget = InputRectangleDisplay()
         self.scroll_layout.addWidget(new_widget)
-        # category_id = self.db_handler.get_category_id(input_data[1])
-        # self.db_handler.insert_task(input_data[0], category_id, input_data[2], input_data[3], input_data[4], input_data[5])
-    
-    # load saved tasks
+        new_widget.reposition_request.connect(self.reposition_widget)
+
+    def load_saved_tasks(self, input_data):
+        new_widget = InputRectangleDisplay(input_data=input_data)
+        self.scroll_layout.addWidget(new_widget)
         
     def center(self):
         qr = self.frameGeometry()
@@ -40,6 +44,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         cp = rect.center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def reposition_widget(self, widget, new_position):
+        self.scroll_layout.removeWidget(widget)
+        self.scroll_layout.insertWidget(new_position, widget)
         
 app = QtWidgets.QApplication(sys.argv)
 font = QtGui.QFont("Arial", 16)
