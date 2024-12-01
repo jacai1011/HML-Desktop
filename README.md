@@ -36,7 +36,3 @@ Notifications
 - notificationID
 - audio
 
-Needed to run:
-export DISPLAY=$(grep -oP '(?<=nameserver\s).+' /etc/resolv.conf):0
-export QT_QPA_PLATFORM=xcb
-export QT_XCB_GL_INTEGRATION=none
