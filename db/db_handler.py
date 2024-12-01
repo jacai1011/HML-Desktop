@@ -146,6 +146,28 @@ class DatabaseHandler:
         """
         result = self.search_one_execute(sql=sql)
         return result
+
+    def check_timeslot_taken(self, start_input, end_input):
+        sql1= f"""
+            SELECT start_time
+            FROM tasks
+            WHERE start_time < '{start_input}' AND end_time > '{start_input}';
+        """
+        result1 = self.search_one_execute(sql=sql1)
+        
+        sql2 = f"""
+            WITH CheckTimeslot AS (
+                SELECT start_time
+                FROM tasks
+                WHERE start_time > '{start_input}'
+            )
+            SELECT start_time
+            FROM CheckTimeslot
+            WHERE start_time < '{end_input}'
+        """
+        
+        result2 = self.search_one_execute(sql=sql2)
+        return result1, result2
     
     def delete_task(self, task_id):
         sql = f"DELETE FROM tasks WHERE task_id = '{task_id}'"

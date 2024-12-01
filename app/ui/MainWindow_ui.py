@@ -12,14 +12,14 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 940)
+        MainWindow.resize(1200, 950)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(40, 40, 51, 51))
         self.pushButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/Plus_symbol.svg.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButton.setIcon(icon)
         self.pushButton.setIconSize(QtCore.QSize(64, 64))
         self.pushButton.setObjectName("pushButton")

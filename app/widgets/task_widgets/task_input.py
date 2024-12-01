@@ -129,15 +129,20 @@ class InputDialog(QtWidgets.QWidget):
             else:
                 self.db_handler = DatabaseHandler()
                 self.category_id = self.db_handler.get_category_id(category)[0]
-                check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
-                if check:
+                check_time = self.db_handler.check_timeslot_taken(start_time, end_time)
+                print(check_time[0])
+                if check_time[0] or check_time[1]:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                 else:
-                    output = self.db_handler.get_all_tasks()
-                    print(output)
-                    input_data = self.db_handler.get_all_tasks()[-1]
-                    self.submitted.emit(input_data)
-                    self.close()
+                    check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
+                    if check:
+                        QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
+                    else:
+                        output = self.db_handler.get_all_tasks()
+                        print(output)
+                        input_data = self.db_handler.get_all_tasks()[-1]
+                        self.submitted.emit(input_data)
+                        self.close()
         else:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all required fields.")
             
