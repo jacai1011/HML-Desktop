@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from app.widgets.task_widgets.animated_toggle import AnimatedToggle
 from app.widgets.task_widgets.am_pm_button import AmPmButtonWidget
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from db.db_handler import DatabaseHandler
 import sys
 
@@ -85,7 +85,7 @@ class InputDialog(QtWidgets.QWidget):
         self.label_layout = QtWidgets.QHBoxLayout()
         self.category_button = QtWidgets.QComboBox(self)
         self.category_button.setPlaceholderText("Category")
-        self.category_button.addItems(["Work", "Leisure", "Routine", "Self-Work"])
+        self.category_button.addItems(["Work", "Leisure", "Routine", "Productivity"])
         self.repeatable_toggle = AnimatedToggle(self)
         self.repeatable_toggle.setFixedSize(self.repeatable_toggle.sizeHint())
         self.repeatable_toggle.setCheckable(True)
@@ -120,8 +120,12 @@ class InputDialog(QtWidgets.QWidget):
         category = self.category_button.currentText()
         start_time = self.convert_24(start_hour, start_minute, self.am_pm_start_state)
         end_time = self.convert_24(end_hour, end_minute, self.am_pm_end_state)
+        print(start_time)
+        print(end_time)
         datetime1 = datetime.combine(datetime.today(), start_time)
         datetime2 = datetime.combine(datetime.today(), end_time)
+        if datetime2 < datetime1:
+            datetime2 += timedelta(days=1)
         time_difference = datetime2 - datetime1
         if category != '' and task_name:
             if time_difference.total_seconds() < 0:
@@ -130,7 +134,6 @@ class InputDialog(QtWidgets.QWidget):
                 self.db_handler = DatabaseHandler()
                 self.category_id = self.db_handler.get_category_id(category)[0]
                 check_time = self.db_handler.check_timeslot_taken(start_time, end_time)
-                print(check_time[0])
                 if check_time[0] or check_time[1]:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                 else:
@@ -146,7 +149,6 @@ class InputDialog(QtWidgets.QWidget):
         else:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all required fields.")
             
-        # error checking where task time/title does not overlap with another task 
 
     def on_cancel(self):
         self.canceled.emit()
@@ -165,13 +167,12 @@ class InputDialog(QtWidgets.QWidget):
             return int(time)
             
     def convert_24(self, hr, mi, ap):
-        
-        if ap == "AM" and hr == 12:
-            hr = hr - 12
-        
-        if ap == "PM" and hr != 12:
+        if ap == 'PM' and hr == 12:
+            hr = 12
+        elif ap == 'PM':
             hr = hr + 12
-        
+        elif ap == 'AM' and hr == 12:
+            hr = hr - 12
         return time(hr, mi)
 
     

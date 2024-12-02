@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QIcon, QPixmap
-from app.widgets.task_widgets.task_input import InputDialog
+from app.widgets.task_widgets.schedule_input import InputDialog
 from db.db_handler import DatabaseHandler
 from datetime import datetime, timedelta
 import sys
@@ -98,7 +98,7 @@ class InputRectangleDisplay(QWidget):
         time_obj_end = datetime.strptime(end_12hr, "%H:%M:%S")
         end_time_12hr = time_obj_end.strftime("%I:%M %p")
         self.time_label = QLabel(f"{time_12hr} - {end_time_12hr}")
-        self.time_label.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align the text to the left
+        self.time_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.time_label.setStyleSheet("""
             QLabel {
                 font-size: 20px;
@@ -127,9 +127,9 @@ class InputRectangleDisplay(QWidget):
         hrs = round(duration.total_seconds() / 3600)
         if hrs == 0:
             self.top_layout.setContentsMargins(10, 10, 10, 0)
-            height = 100
+            height = 110
         else:
-            height = hrs * 150
+            height = 150 + (hrs - 1) * 50
         
         self.setFixedHeight(height)
 

@@ -10,18 +10,6 @@ class DatabaseHandler:
         self.cursor = None
 
     def init_database(self):
-        # Create necessary folder and database file if they don't exist
-        # folder_path = Path(self.db_folder)
-        # db_path = Path(self.db_path)
-
-        # if not folder_path.exists():
-        #     folder_path.mkdir(parents=True)
-
-        # if not db_path.exists():
-        #     with open(self.db_path, "w"):
-        #         pass
-
-        # Connect to the database and create the tables if they don't exist
         self.connector()
         try:
             # Create categories table if it doesn't exist
@@ -107,7 +95,7 @@ class DatabaseHandler:
             self.connection.close()
             
     def insert_categories(self):
-        sql = f"INSERT OR IGNORE INTO categories (category_name) VALUES ('Work'), ('Leisure'), ('Routine'), ('Self-Work')"
+        sql = f"INSERT OR IGNORE INTO categories (category_name) VALUES ('Work'), ('Leisure'), ('Routine'), ('Productivity')"
         result = self.insert_execute(sql=sql)
         return result
     
