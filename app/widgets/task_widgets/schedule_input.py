@@ -20,12 +20,28 @@ class InputDialog(QtWidgets.QWidget):
 
         # Activity Title
         self.task_input = QtWidgets.QLineEdit(self)
+        line_style = """
+            QLineEdit {
+                background-color: white;
+                padding: 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+        """
+        self.task_input.setStyleSheet(line_style)
         self.layout.addWidget(QtWidgets.QLabel("Activity Title:"))
         self.layout.addWidget(self.task_input)
         
         # Time box
-        self.time_layout = QtWidgets.QHBoxLayout()
+        time_style = """
+            QLineEdit {
+                background-color: white;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+        """
         
+        self.time_layout = QtWidgets.QHBoxLayout()
         self.time_layout.addWidget(QtWidgets.QLabel("Start Time"))
         self.start_time_layout = QtWidgets.QHBoxLayout()
         self.start_time_layout.setContentsMargins(0, 0, 30, 0)
@@ -33,9 +49,11 @@ class InputDialog(QtWidgets.QWidget):
         self.colon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.colon_label.setFixedSize(5, 30)
         self.start_hr = QtWidgets.QLineEdit(self)
+        self.start_hr.setStyleSheet(time_style)
         self.start_hr.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.start_hr.setPlaceholderText("00")
         self.start_min = QtWidgets.QLineEdit(self)
+        self.start_min.setStyleSheet(time_style)
         self.start_min.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.start_min.setPlaceholderText("00")
         validator = QtGui.QIntValidator(0, 12, self)
@@ -61,9 +79,11 @@ class InputDialog(QtWidgets.QWidget):
         self.colon_label.setFixedSize(5, 30)
         self.colon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.end_hr = QtWidgets.QLineEdit(self)
+        self.end_hr.setStyleSheet(time_style)
         self.end_hr.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.end_hr.setPlaceholderText("00")
         self.end_min = QtWidgets.QLineEdit(self)
+        self.end_min.setStyleSheet(time_style)
         self.end_min.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.end_min.setPlaceholderText("00")
         self.end_hr.setValidator(validator)
@@ -84,6 +104,7 @@ class InputDialog(QtWidgets.QWidget):
         # Labels box
         self.label_layout = QtWidgets.QHBoxLayout()
         self.category_button = QtWidgets.QComboBox(self)
+        self.category_button.setFixedSize(180, 40)
         self.category_button.setPlaceholderText("Category")
         self.category_button.addItems(["Work", "Leisure", "Routine", "Productivity"])
         self.repeatable_toggle = AnimatedToggle(self)
@@ -99,6 +120,19 @@ class InputDialog(QtWidgets.QWidget):
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)
         self.ok_button.clicked.connect(self.on_ok)
         self.cancel_button.clicked.connect(self.on_cancel)
+        button_style = """
+            QPushButton {
+                background-color: white;
+                padding: 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: lightgrey;
+            }
+        """
+        self.ok_button.setStyleSheet(button_style)
+        self.cancel_button.setStyleSheet(button_style)
         self.button_layout.addWidget(self.cancel_button)
         self.button_layout.addWidget(self.ok_button)
         self.button_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)

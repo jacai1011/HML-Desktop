@@ -55,7 +55,7 @@ class AnimatedToggle(QCheckBox):
         self.stateChanged.connect(self.setup_animation)
 
     def sizeHint(self):
-        return QSize(87, 67)
+        return QSize(80, 55)
 
     def hitButton(self, pos: QPoint):
         return self.contentsRect().contains(pos)
