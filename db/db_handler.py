@@ -35,6 +35,17 @@ class DatabaseHandler:
                 );
             """
             self.cursor.execute(sql_tasks)
+            
+            sql_proj = """
+                CREATE TABLE IF NOT EXISTS projects (
+                    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    category_id INTEGER,
+                    title TEXT NOT NULL,
+                    priority TEXT,
+                    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+                );
+            """
+            self.cursor.execute(sql_proj)
 
             # Commit changes to the database
             self.connection.commit()
@@ -119,7 +130,25 @@ class DatabaseHandler:
         sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks ORDER BY start_time"
         result = self.search_all_execute(sql=sql)
         return result
-
+    
+    def insert_project(self, category_id, title, priority):
+        sql = f"""INSERT INTO projects (category_id, title, priority) 
+                VALUES ('{category_id}', '{title}', '{priority}')""" 
+        result = self.insert_execute(sql=sql)
+        return result
+    
+    def get_all_projects(self, category_id):
+        sql = f"SELECT project_id, category_id, title, priority FROM projects WHERE category_id = '{category_id}'"
+        result = self.search_all_execute(sql=sql)
+        return result
+    
+    def delete_project(self, project_id):
+        sql = f"DELETE FROM projects WHERE project_id = '{project_id}'"
+        result = self.insert_execute(sql=sql)
+        vacuum_sql = "VACUUM;"
+        self.insert_execute(sql=vacuum_sql)
+        return result
+    
     def get_position(self, task_id):
         sql = f"""
             WITH RankedTasks AS (

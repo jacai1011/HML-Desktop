@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QIcon, QPixmap
-from app.widgets.task_widgets.schedule_input import InputDialog
+from app.widgets.schedule_widgets.schedule_input import InputDialog
 from db.db_handler import DatabaseHandler
 from datetime import datetime, timedelta
 import sys
@@ -19,7 +19,6 @@ class InputRectangleDisplay(QWidget):
         
         self.time_label = QLabel("Placeholder")
 
-        # Set layouts, whether or not input_data is provided
         self.top_layout = QHBoxLayout()
         self.middle_layout = QHBoxLayout()
         self.setLayout(self.layout)

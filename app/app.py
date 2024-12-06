@@ -3,10 +3,9 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import QSize
 
-from app.widgets.task_widgets.schedule_display import InputRectangleDisplay
+from app.widgets.schedule_widgets.schedule_display import InputRectangleDisplay
 from db.db_handler import DatabaseHandler
 from app.task_list import TaskList
-from app.widgets.center_widget import center
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -38,9 +37,9 @@ class MainWindow(QtWidgets.QMainWindow):
             }
         """
         
-        self.pushButton = QtWidgets.QPushButton("Add Task", self.centralwidget)
+        self.pushButton = QtWidgets.QPushButton("Add Schedule", self.centralwidget)
         self.pushButton.setStyleSheet(button_style)
-        self.pushButton.setFixedSize(131, 61) 
+        self.pushButton.setFixedSize(201, 61) 
         self.pushButton.clicked.connect(self.add_new_block)
 
         self.verticalLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -104,18 +103,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: transparent;
             }
             QScrollArea QScrollBar {
-                border: none;  /* Remove the border of the scrollbar */
-                background: transparent;  /* Make scrollbar background transparent */
-                width: 0px;  /* Hide vertical scrollbar */
-                height: 0px;  /* Hide horizontal scrollbar */
+                border: none;
+                background: transparent;
+                width: 0px;
+                height: 0px;
             }
-
             InputRectangleDisplay QComboBox {
-                background-color: white;
-                border: 1px solid #000;
-                color: black;
-            }
-            InputRectangleDisplay QLineEdit {
                 background-color: white;
                 border: 1px solid #000;
                 color: black;

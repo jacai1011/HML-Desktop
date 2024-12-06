@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
-from app.widgets.task_widgets.animated_toggle import AnimatedToggle
-from app.widgets.task_widgets.am_pm_button import AmPmButtonWidget
+from app.widgets.schedule_widgets.animated_toggle import AnimatedToggle
+from app.widgets.schedule_widgets.am_pm_button import AmPmButtonWidget
 from datetime import datetime, time, timedelta
 from db.db_handler import DatabaseHandler
 import sys
@@ -107,6 +107,22 @@ class InputDialog(QtWidgets.QWidget):
         self.category_button.setFixedSize(180, 40)
         self.category_button.setPlaceholderText("Category")
         self.category_button.addItems(["Work", "Leisure", "Routine", "Productivity"])
+        self.category_button.setStyleSheet("""
+            QComboBox {
+                border: 2px solid black;
+                border-radius: 5px;
+                padding: 5px;
+                background-color: white;
+            }
+            QComboBox::drop-down {
+                border: 0px;
+            }
+            QComboBox::down-arrow {
+                image: url(icons/drop_arrow.png);
+                width: 14px;
+                height: 14px;
+            }
+        """)
         self.repeatable_toggle = AnimatedToggle(self)
         self.repeatable_toggle.setFixedSize(self.repeatable_toggle.sizeHint())
         self.repeatable_toggle.setCheckable(True)

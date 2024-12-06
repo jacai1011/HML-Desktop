@@ -39,6 +39,6 @@ Maybe needed to run:
 - export QT_XCB_GL_INTEGRATION=none
 
 Todo
-- add button that links to schedule list overview
+- add button that links to schedule list overview for each page
 - add auto break timer for productivity
-- make fullscreen
+- cleanup ui for schedule input
