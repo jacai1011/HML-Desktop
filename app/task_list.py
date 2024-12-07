@@ -1,12 +1,13 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from db.db_handler import DatabaseHandler
 from app.widgets.task_widgets.task_display import TaskDisplay
+from app.notification_window import NotificationWindow
 import sys
 
 class TaskList(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
-        self.setWindowTitle("New Window")
+        self.setWindowTitle("Task Page")
         self.showFullScreen()
         self.parent_window = parent
 
@@ -78,7 +79,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.nextButton = QtWidgets.QPushButton("Start", self.centralwidget)
         self.nextButton.setStyleSheet(button_style)
         self.nextButton.setFixedSize(131, 61) 
-        # self.nextButton.clicked.connect(self.open_start)
+        self.nextButton.clicked.connect(self.open_main_window)
 
         self.backButton = QtWidgets.QPushButton("Back", self.centralwidget)
         self.backButton.setStyleSheet(button_style)
@@ -145,6 +146,10 @@ class TaskList(QtWidgets.QMainWindow):
         self.parent_window.show()
         self.close()
 
+    def open_main_window(self):
+        self.main_window = NotificationWindow(self.parent_window)
+        self.main_window.show()
+        self.close()
 
 app = QtWidgets.QApplication(sys.argv)
 font = QtGui.QFont("Arial", 16)
