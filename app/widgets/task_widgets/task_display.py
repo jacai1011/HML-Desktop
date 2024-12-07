@@ -82,7 +82,7 @@ class TaskDisplay(QWidget):
                 font-size: 30px;
             }
         """)
-        self.top_layout.addWidget(title_label)
+        self.top_layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignTop)
         self.top_layout.addWidget(self.delete_button, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         self.top_layout.setContentsMargins(10, 20, 10, 0)
         self.layout.addLayout(self.top_layout)

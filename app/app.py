@@ -12,8 +12,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.showFullScreen()
         self.setWindowTitle("Today's Schedule")
+        self.showFullScreen()
 
         self.db_handler = DatabaseHandler()
         self.db_handler.init_database()
@@ -86,7 +86,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def open_task_list_window(self):
         """Open the task list window and close the current one."""
-        self.secondary_window = TaskList()
+        self.secondary_window = TaskList(self)
         self.secondary_window.show()
         self.close()
 
