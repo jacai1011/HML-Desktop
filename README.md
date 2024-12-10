@@ -14,25 +14,6 @@ Systems
 - Backend -> Python
 - GUI -> PyQt6
 
-Libraries
-- Desktop UI
-    - PyQt
-
-Database Schema
-
-Tasks
-- task_id
-- category_id
-- title
-- repeatable
-- start_time
-- end_time
-- duration
-
-Categories
-- category_id
-- category
-
 Maybe needed to run:
 - export DISPLAY=$(grep -oP '(?<=nameserver\s).+' /etc/resolv.conf):0
 - export QT_QPA_PLATFORM=xcb
@@ -42,3 +23,8 @@ Todo
 - add button that links to schedule list overview for each page
 - add auto break timer for productivity
 - cleanup ui for schedule input
+- use QStackedWIdget to avoid jarring page transition
+- color theory
+- make schedule input box taller
+- During break show completed tasks
+- update tasks input to use project instead of priority

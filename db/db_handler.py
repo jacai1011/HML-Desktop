@@ -114,6 +114,11 @@ class DatabaseHandler:
         sql = f"SELECT category_id FROM categories WHERE category_name LIKE '{category}'"
         result = self.search_one_execute(sql=sql)
         return result
+
+    def get_category_by_id(self, category_id):
+        sql = f"SELECT category_name FROM categories WHERE category_id LIKE '{category_id}'"
+        result = self.search_one_execute(sql=sql)
+        return result
     
     def insert_task(self, category_id, title, repeatable, start_time, end_time, duration):
         sql = f"""INSERT INTO tasks (category_id, title, repeatable, start_time, end_time, duration) 
@@ -125,7 +130,16 @@ class DatabaseHandler:
         sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks"
         result = self.search_all_execute(sql=sql)
         return result
-
+    
+    def get_current_task(self, time):
+        sql = f"""
+            SELECT task_id, category_id, title, repeatable, start_time, end_time, duration
+            FROM tasks
+            WHERE start_time <= '{time}' AND end_time > '{time}';
+        """
+        result = self.search_one_execute(sql=sql)
+        return result
+    
     def load_tasks(self):
         sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks ORDER BY start_time"
         result = self.search_all_execute(sql=sql)

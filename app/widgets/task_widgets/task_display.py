@@ -38,7 +38,6 @@ class TaskDisplay(QWidget):
         rect = self.rect().adjusted(5, 5, -5, -5)
 
         # Background Color
-
         background_color = Qt.GlobalColor.lightGray
 
         # Fill rectangle with chosen background color

@@ -87,7 +87,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.open_schedule_list)
         self.buttonLayout.addWidget(self.backButton)
         self.buttonLayout.addWidget(self.nextButton)
-        self.buttonLayout.setSpacing(10)  # Space between buttons
+        self.buttonLayout.setSpacing(10)
         self.buttonLayout.setContentsMargins(0, 0, 450, 50)
         self.mainLayout.addLayout(self.verticalLayout2)
         self.mainLayout1.addLayout(self.buttonLayout)

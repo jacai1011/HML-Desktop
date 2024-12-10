@@ -82,6 +82,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def reposition_widget(self, widget, new_position):
         """Reposition an existing widget."""
         self.scroll_layout.removeWidget(widget)
+        print(new_position)
         self.scroll_layout.insertWidget(new_position, widget)
 
     def open_task_list_window(self):
