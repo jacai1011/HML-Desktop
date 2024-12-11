@@ -12,7 +12,7 @@ class TaskDisplay(QWidget):
         super().__init__()
         self.db_handler = DatabaseHandler()
         self.data_submitted = False
-        self.setFixedHeight(270)
+        self.setFixedHeight(400)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 10, 20, 10)

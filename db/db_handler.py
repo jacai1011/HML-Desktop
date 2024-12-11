@@ -39,7 +39,9 @@ class DatabaseHandler:
                 CREATE TABLE IF NOT EXISTS projects (
                     project_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     project_name TEXT UNIQUE,
-                    project_color TEXT
+                    project_color TEXT,
+                    category_id INTEGER,
+                    FOREIGN KEY (category_id) REFERENCES categories(category_id)
                 );
             """
             self.cursor.execute(sql_projects)
@@ -219,7 +221,25 @@ class DatabaseHandler:
         vacuum_sql = "VACUUM;"
         self.insert_execute(sql=vacuum_sql)
         return result
+
+    def insert_project(self, project_name, project_color, category_id):
+        sql = f"""INSERT INTO projects (category_id, title, project_id) 
+                VALUES ('{project_name}', '{project_color}', '{category_id}')""" 
+        result = self.insert_execute(sql=sql)
+        return result
     
+    def get_all_projects_by_category(self, category_id):
+        sql = f"SELECT project_name, project_color FROM projects WHERE category_id = '{category_id}'"
+        result = self.search_all_execute(sql=sql)
+        return result
+
+    def delete_project(self, project_id):
+        sql = f"DELETE FROM projects WHERE project_id = '{project_id}'"
+        result = self.insert_execute(sql=sql)
+        vacuum_sql = "VACUUM;"
+        self.insert_execute(sql=vacuum_sql)
+        return result
+        
     # delete all at end of day
     def delete_all(self):
         delete_sql = "DELETE FROM schedules WHERE repeatable != 'True'"

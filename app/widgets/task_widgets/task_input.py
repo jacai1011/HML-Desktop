@@ -1,5 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from db.db_handler import DatabaseHandler
+from app.widgets.task_widgets.project_tag import ProjectTag
 import sys
 
 class TaskInput(QtWidgets.QWidget):
@@ -28,9 +29,14 @@ class TaskInput(QtWidgets.QWidget):
         self.layout.addWidget(self.task_input)
         
         self.layout.addWidget(QtWidgets.QLabel("Project:"))
-        self.project_input = QtWidgets.QLineEdit(self)
-        self.project_input.setStyleSheet(line_style)
-        self.layout.addWidget(self.project_input)
+        
+        self.project_layout = QtWidgets.QHBoxLayout()
+        self.project_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        
+        tag = ProjectTag(category_id=category_id, project_id="HML", color="#FFA500")
+        self.project_layout.addWidget(tag)
+        
+        self.layout.addLayout(self.project_layout)
 
         self.button_layout = QtWidgets.QHBoxLayout()
         self.ok_button = QtWidgets.QPushButton("Add Task", self)
