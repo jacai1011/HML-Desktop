@@ -29,7 +29,7 @@ class InputDialog(QtWidgets.QWidget):
             }
         """
         self.task_input.setStyleSheet(line_style)
-        self.layout.addWidget(QtWidgets.QLabel("Activity Title:"))
+        self.layout.addWidget(QtWidgets.QLabel("Schedule Title:"))
         self.layout.addWidget(self.task_input)
         
         # Time box
@@ -187,13 +187,13 @@ class InputDialog(QtWidgets.QWidget):
                 if check_time[0] or check_time[1]:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                 else:
-                    check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
+                    check = self.db_handler.insert_schedule(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
                     if check:
                         QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                     else:
-                        output = self.db_handler.get_all_tasks()
+                        output = self.db_handler.get_all_schedules()
                         print(output)
-                        input_data = self.db_handler.get_all_tasks()[-1]
+                        input_data = self.db_handler.get_all_schedules()[-1]
                         self.submitted.emit(input_data)
                         self.close()
         else:

@@ -21,10 +21,9 @@ class DatabaseHandler:
             """
             self.cursor.execute(sql_categories)
 
-            # Create tasks table if it doesn't exist
-            sql_tasks = """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    task_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sql_schedules = """
+                CREATE TABLE IF NOT EXISTS schedules (
+                    schedule_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     category_id INTEGER,
                     title TEXT NOT NULL,
                     repeatable BOOLEAN,
@@ -34,18 +33,27 @@ class DatabaseHandler:
                     FOREIGN KEY (category_id) REFERENCES categories(category_id)
                 );
             """
-            self.cursor.execute(sql_tasks)
+            self.cursor.execute(sql_schedules)
             
-            sql_proj = """
+            sql_projects = """
                 CREATE TABLE IF NOT EXISTS projects (
                     project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    category_id INTEGER,
-                    title TEXT NOT NULL,
-                    priority TEXT,
-                    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+                    project_name TEXT UNIQUE,
+                    project_color TEXT
                 );
             """
-            self.cursor.execute(sql_proj)
+            self.cursor.execute(sql_projects)
+            sql_task = """
+                CREATE TABLE IF NOT EXISTS tasks (
+                    task_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    category_id INTEGER,
+                    title TEXT NOT NULL,
+                    project_id INTEGER,
+                    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+                    FOREIGN KEY (project_id) REFERENCES projects(project_id)
+                );
+            """
+            self.cursor.execute(sql_task)
 
             # Commit changes to the database
             self.connection.commit()
@@ -120,60 +128,65 @@ class DatabaseHandler:
         result = self.search_one_execute(sql=sql)
         return result
     
-    def insert_task(self, category_id, title, repeatable, start_time, end_time, duration):
-        sql = f"""INSERT INTO tasks (category_id, title, repeatable, start_time, end_time, duration) 
+    def insert_schedule(self, category_id, title, repeatable, start_time, end_time, duration):
+        sql = f"""INSERT INTO schedules (category_id, title, repeatable, start_time, end_time, duration) 
                 VALUES ('{category_id}', '{title}', '{repeatable}', '{start_time}', '{end_time}', '{duration}')""" 
         result = self.insert_execute(sql=sql)
         return result
 
-    def get_all_tasks(self):
-        sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks"
+    def get_all_schedules(self):
+        sql = "SELECT schedule_id, category_id, title, repeatable, start_time, end_time, duration FROM schedules"
         result = self.search_all_execute(sql=sql)
         return result
     
-    def get_current_task(self, time):
+    def get_current_schedule(self, time):
         sql = f"""
-            SELECT task_id, category_id, title, repeatable, start_time, end_time, duration
-            FROM tasks
+            SELECT schedule_id, category_id, title, repeatable, start_time, end_time, duration
+            FROM schedules
             WHERE start_time <= '{time}' AND end_time > '{time}';
         """
         result = self.search_one_execute(sql=sql)
         return result
     
-    def load_tasks(self):
-        sql = "SELECT task_id, category_id, title, repeatable, start_time, end_time, duration FROM tasks ORDER BY start_time"
+    def load_schedules(self):
+        sql = "SELECT schedule_id, category_id, title, repeatable, start_time, end_time, duration FROM schedules ORDER BY start_time"
         result = self.search_all_execute(sql=sql)
         return result
     
-    def insert_project(self, category_id, title, priority):
-        sql = f"""INSERT INTO projects (category_id, title, priority) 
-                VALUES ('{category_id}', '{title}', '{priority}')""" 
+    def insert_task(self, category_id, title, project_id):
+        sql = f"""INSERT INTO tasks (category_id, title, project_id) 
+                VALUES ('{category_id}', '{title}', '{project_id}')""" 
         result = self.insert_execute(sql=sql)
         return result
     
-    def get_all_projects(self, category_id):
-        sql = f"SELECT project_id, category_id, title, priority FROM projects WHERE category_id = '{category_id}'"
+    def get_all_tasks_by_category(self, category_id):
+        sql = f"SELECT task_id, category_id, title, project_id FROM tasks WHERE category_id = '{category_id}'"
         result = self.search_all_execute(sql=sql)
         return result
     
-    def delete_project(self, project_id):
-        sql = f"DELETE FROM projects WHERE project_id = '{project_id}'"
+    def load_saved_tasks_by_project(self, category_id):
+        sql = f"SELECT task_id, category_id, title, project_id FROM tasks WHERE category_id = '{category_id}' ORDER BY project_id"
+        result = self.search_all_execute(sql=sql)
+        return result
+    
+    def delete_task(self, task_id):
+        sql = f"DELETE FROM tasks WHERE task_id = '{task_id}'"
         result = self.insert_execute(sql=sql)
         vacuum_sql = "VACUUM;"
         self.insert_execute(sql=vacuum_sql)
         return result
     
-    def get_position(self, task_id):
+    def get_position(self, schedule_id):
         sql = f"""
-            WITH RankedTasks AS (
-                SELECT task_id,
+            WITH RankedSchedules AS (
+                SELECT schedule_id,
                     start_time,
                     ROW_NUMBER() OVER (ORDER BY start_time) AS position
-                FROM tasks
+                FROM schedules
             )
             SELECT position
-            FROM RankedTasks
-            WHERE task_id = '{task_id}'
+            FROM RankedSchedules
+            WHERE schedule_id = '{schedule_id}'
         """
         result = self.search_one_execute(sql=sql)
         return result
@@ -181,7 +194,7 @@ class DatabaseHandler:
     def check_timeslot_taken(self, start_input, end_input):
         sql1= f"""
             SELECT start_time
-            FROM tasks
+            FROM schedules
             WHERE start_time < '{start_input}' AND end_time > '{start_input}';
         """
         result1 = self.search_one_execute(sql=sql1)
@@ -189,7 +202,7 @@ class DatabaseHandler:
         sql2 = f"""
             WITH CheckTimeslot AS (
                 SELECT start_time
-                FROM tasks
+                FROM schedules
                 WHERE start_time > '{start_input}'
             )
             SELECT start_time
@@ -200,8 +213,8 @@ class DatabaseHandler:
         result2 = self.search_one_execute(sql=sql2)
         return result1, result2
     
-    def delete_task(self, task_id):
-        sql = f"DELETE FROM tasks WHERE task_id = '{task_id}'"
+    def delete_schedule(self, schedule_id):
+        sql = f"DELETE FROM schedules WHERE schedule_id = '{schedule_id}'"
         result = self.insert_execute(sql=sql)
         vacuum_sql = "VACUUM;"
         self.insert_execute(sql=vacuum_sql)
@@ -209,7 +222,7 @@ class DatabaseHandler:
     
     # delete all at end of day
     def delete_all(self):
-        delete_sql = "DELETE FROM tasks WHERE repeatable != 'True'"
+        delete_sql = "DELETE FROM schedules WHERE repeatable != 'True'"
         result = self.insert_execute(sql=delete_sql)
 
         vacuum_sql = "VACUUM;"

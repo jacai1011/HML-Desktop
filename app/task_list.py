@@ -12,8 +12,6 @@ class TaskList(QtWidgets.QMainWindow):
         self.parent_window = parent
 
         self.db_handler = DatabaseHandler()
-        self.db_handler.init_database()
-        self.db_handler.insert_categories()
         
         self.centralwidget = QtWidgets.QWidget(self)
         self.setCentralWidget(self.centralwidget)
@@ -39,7 +37,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.pushButton = QtWidgets.QPushButton("Add Work Task", self.centralwidget)
         self.pushButton.setStyleSheet(button_style)
         self.pushButton.setFixedSize(201, 61)
-        self.pushButton.clicked.connect(self.add_new_block)
+        self.pushButton.clicked.connect(self.add_new_work_task)
 
         self.verticalLayout1.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
 
@@ -58,7 +56,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.pushButton1 = QtWidgets.QPushButton("Add Leisure Task", self.centralwidget)
         self.pushButton1.setStyleSheet(button_style)
         self.pushButton1.setFixedSize(201, 61)
-        self.pushButton1.clicked.connect(self.add_new_block1)
+        self.pushButton1.clicked.connect(self.add_new_leisure_task)
 
         self.verticalLayout2.addWidget(self.pushButton1, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
 
@@ -94,13 +92,13 @@ class TaskList(QtWidgets.QMainWindow):
         
         self.set_background_image()
 
-        self.input_data = self.db_handler.get_all_projects(1)
+        self.input_data = self.db_handler.load_saved_tasks_by_project(1)
         for entry in self.input_data:
-            self.load_saved_projects(entry)
+            self.load_saved_work_tasks(entry)
 
-        self.input_data = self.db_handler.get_all_projects(3)
+        self.input_data = self.db_handler.load_saved_tasks_by_project(3)
         for entry in self.input_data:
-            self.load_saved_projects1(entry)
+            self.load_saved_leisure_tasks(entry)
             
     def set_background_image(self):
         self.setStyleSheet("""
@@ -122,23 +120,19 @@ class TaskList(QtWidgets.QMainWindow):
             }
         """)
 
-    def add_new_block(self):
-        """Add a new input block dynamically."""
+    def add_new_work_task(self):
         new_widget = TaskDisplay(input_data=None,category=1)
         self.scroll_layout.addWidget(new_widget)
 
-    def add_new_block1(self):
-        """Add a new input block dynamically."""
+    def add_new_leisure_task(self):
         new_widget = TaskDisplay(input_data=None,category=3)
         self.scroll_layout1.addWidget(new_widget)
 
-    def load_saved_projects(self, input_data):
-        """Load tasks from the database into the scroll area."""
+    def load_saved_work_tasks(self, input_data):
         new_widget = TaskDisplay(input_data=input_data, category=1)
         self.scroll_layout.addWidget(new_widget)
 
-    def load_saved_projects1(self, input_data):
-        """Load tasks from the database into the scroll area."""
+    def load_saved_leisure_tasks(self, input_data):
         new_widget = TaskDisplay(input_data=input_data, category=3)
         self.scroll_layout1.addWidget(new_widget)
     

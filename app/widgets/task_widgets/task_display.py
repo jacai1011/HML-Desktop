@@ -90,5 +90,5 @@ class TaskDisplay(QWidget):
 
 
     def on_delete(self):
-        self.db_handler.delete_project(self.input_data[0])
+        self.db_handler.delete_task(self.input_data[0])
         self.close()

@@ -136,8 +136,8 @@ class InputRectangleDisplay(QWidget):
         self.request_reposition(position)
         
     def on_delete(self):
-        self.db_handler.delete_task(self.input_data[0])
-        output = self.db_handler.get_all_tasks()
+        self.db_handler.delete_schedule(self.input_data[0])
+        output = self.db_handler.get_all_schedules()
         print(output)
         self.close()
     
