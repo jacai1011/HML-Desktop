@@ -1,62 +1,92 @@
-from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QMainWindow, QScrollArea
+from PyQt6.QtCore import Qt, QSize, pyqtSignal, QTimer, QRect
 from db.db_handler import DatabaseHandler
-from app.widgets.task_widgets.task_display import TaskDisplay
-from app.widgets.schedule_widgets.schedule_display import InputRectangleDisplay
+from app.widgets.notif_widgets.project_display import ProjectDisplay
+from app.widgets.notif_widgets.notif_display import NotifDisplay
+
 from datetime import datetime
 import math
+import os
 
-class NotificationWindow(QtWidgets.QMainWindow):
+class NotificationWindow(QMainWindow):
 
     def __init__(self, parent=None):
         super().__init__()
 
         self.setWindowTitle("Notification Page")
-        self.setFixedSize(900, 600)
+        self.setFixedSize(900, 650)
         self.center()
         self.parent_window = parent
 
         self.db_handler = DatabaseHandler()
+        self.update = False
         
-        self.centralwidget = QtWidgets.QWidget(self)
+        self.centralwidget = QWidget(self)
         self.setCentralWidget(self.centralwidget)
-        layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        layout = QVBoxLayout(self.centralwidget)
         
-        self.msg_layout = QtWidgets.QVBoxLayout()
+        self.msg_layout = QVBoxLayout()
         layout.addLayout(self.msg_layout)
-        self.dynamic_layout = QtWidgets.QVBoxLayout()
+        self.dynamic_layout = QVBoxLayout()
         layout.addLayout(self.dynamic_layout)
-        self.time_layout = QtWidgets.QVBoxLayout()
+        self.time_layout = QVBoxLayout()
         layout.addLayout(self.time_layout)
+        self.button_layout = QHBoxLayout()
+        layout.addLayout(self.button_layout)
         
-        self.schedule_label = QtWidgets.QLabel(self)
+        self.msg_layout.setContentsMargins(0, 30, 0, 0)
+        self.msg_layout.setSpacing(20)
+        
+        self.button_layout.setContentsMargins(0, 0, 30, 30)
+
+        button_style = """
+            QPushButton {
+                background-color: white;
+                padding: 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: lightgrey;
+            }
+        """
+        self.schedule_label = QLabel(self)
         self.schedule_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 40px;
             }
         """)
-        self.msg_layout.addWidget(self.schedule_label, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.msg_layout.addWidget(self.schedule_label, alignment=Qt.AlignmentFlag.AlignHCenter)
 
-        self.time_label = QtWidgets.QLabel(self)
+        self.time_label = QLabel(self)
         self.time_label.setStyleSheet("""
             QLabel {
                 font-size: 30px;
             }
         """)
-        self.time_layout.addWidget(self.time_label, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.time_layout.addWidget(self.time_label, alignment=Qt.AlignmentFlag.AlignHCenter)
 
-        self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.update_window)
-        self.timer.start(1000)  # Update every 1000 milliseconds (1 second)
-
+        self.backButton = QPushButton("Schedules", self.centralwidget)
+        self.backButton.setStyleSheet(button_style)
+        self.backButton.setFixedSize(131, 61) 
+        self.backButton.clicked.connect(self.open_schedule_list)
+        
+        self.button_layout.addWidget(self.backButton, alignment=Qt.AlignmentFlag.AlignRight)
+        
         self.update_window()
-
+        self.set_background_image()
+        
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_window)
+        self.timer.start(1000)
+        
     def update_window(self):
         current_time = datetime.now().time()
         time_format = "%H:%M:%S"
         formatted_time = current_time.strftime(time_format)
-        current_schedule = self.db_handler.get_current_task(formatted_time)
+        self.current_schedule = self.db_handler.get_current_schedule(formatted_time)
         t1 = datetime.strptime(formatted_time, time_format)
-        t2 = datetime.strptime(current_schedule[5], time_format)
+        t2 = datetime.strptime(self.current_schedule[5], time_format)
         time_difference = t2 - t1
         total_seconds = time_difference.total_seconds()
         minutes = math.ceil((total_seconds % 3600) / 60)
@@ -69,36 +99,110 @@ class NotificationWindow(QtWidgets.QMainWindow):
         else:
             greeting = "Evening"
             
-        schedule_title = f"Good {greeting}, your current focus is {current_schedule[2]}"
+        schedule_title = f"Good {greeting}, your current schedule is"
         
-        new_widget = InputRectangleDisplay(input_data=current_schedule)
+        new_widget = NotifDisplay(input_data=self.current_schedule)
 
         if self.msg_layout.count() == 2:
-            # Remove the existing widget
-            old_widget = self.msg_layout.takeAt(1).widget()
-            if old_widget is not new_widget:
+            old_widget = self.msg_layout.itemAt(1).widget()
+            if old_widget.get_name() != new_widget.get_name():
+                old_widget = self.msg_layout.takeAt(1).widget()
                 old_widget.deleteLater()
                 self.msg_layout.addWidget(new_widget)
+                self.show_system_notification()
+                self.update = True
+            else:
+                self.update = False
         else:
             self.msg_layout.addWidget(new_widget)
+            self.show_system_notification()
+            self.update = True
+
+        self.category = self.db_handler.get_category_by_id(self.current_schedule[1])
         
-                
-        category = self.db_handler.get_category_by_id(current_schedule[1])
+        if self.category[0] == "Productivity" and self.update == True:
+            self.msg_layout.setContentsMargins(0, 30, 0, 10)
+            self.time_layout.setContentsMargins(0, 30, 0, 50)
+            for i in reversed(range(self.dynamic_layout.count())):
+                widget = self.dynamic_layout.itemAt(i).widget()
+                if widget:
+                    widget.setParent(None)
+            self.project_layout = QHBoxLayout()
+            self.project_current = QLabel(self)
+            self.project_current.setStyleSheet("""
+                QLabel {
+                    font-size: 30px;
+                }
+            """)
+
+            self.project_current.setText("Current Project:")
+            self.project_layout.addWidget(self.project_current)
+            self.project_dropdown = QComboBox(self)
+            self.project_dropdown.setPlaceholderText("Project")
+            self.projects = self.db_handler.get_all_projects_by_category(self.current_schedule[1])
+            self.project_dropdown.addItems([item[1] for item in self.projects])
+            self.project_dropdown.currentTextChanged.connect(self.display_projects)
+            self.project_layout.addWidget(self.project_dropdown)
+            self.project_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.dynamic_layout.addLayout(self.project_layout)
+            
+            self.scrollArea = QScrollArea(self.centralWidget())
+            self.scrollArea.setWidgetResizable(True)
+            self.scrollArea.setMaximumHeight(110)
+            self.scrollAreaWidgetContents = QWidget()
+            self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+            self.scroll_layout = QVBoxLayout(self.scrollAreaWidgetContents)
+            self.dynamic_layout.addWidget(self.scrollArea)
+
             
         if total_seconds > 3600:
             hours = int(total_seconds // 3600)
-            message = f"Your {category[0]} block will end in {hours} hours and {minutes} minutes"
+            message = f"Your {self.category[0]} block will end in {hours} hours and {minutes} minutes"
         else:
-            message = f"Your {category[0]} block will end in {minutes} minutes"
+            message = f"Your {self.category[0]} block will end in {minutes} minutes"
 
         self.schedule_label.setText(f"{schedule_title}")
         self.time_label.setText(
             f"{message}"
         )
 
+    def open_schedule_list(self):
+        self.timer.stop()
+        self.parent_window.show()
+        self.close()
+
     def center(self):
         qr = self.frameGeometry()
-        rect = QtCore.QRect(0, 0, 2560, 1450)
+        rect = QRect(0, 0, 2560, 1450)
         cp = rect.center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def display_projects(self, current_project):
+        project_id = self.db_handler.get_project_id(current_project)
+        print(project_id)
+        self.clear_layout(self.scroll_layout)
+        widgets = self.db_handler.get_task_by_project_and_category(self.current_schedule[1], project_id[0])
+        for widget in widgets:
+            task = ProjectDisplay(input_data=widget)
+            self.scroll_layout.addWidget(task)
+
+    def clear_layout(self, layout):
+        while layout.count() > 0:
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+
+    def set_background_image(self):
+        self.setStyleSheet("""
+            QScrollArea {
+                background: transparent;
+                border: none;
+            }
+        """)
+
+    def show_system_notification(self):
+        os.system(
+            'powershell.exe -Command "New-BurntToastNotification -Text \'Notification Title\', \'This is the content of the notification.\'"'
+        )

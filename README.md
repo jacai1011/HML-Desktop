@@ -23,8 +23,9 @@ Todo
 - add button that links to schedule list overview for each page
 - add auto break timer for productivity
 - cleanup ui for schedule input
-- use QStackedWIdget to avoid jarring page transition
+- use QStackedWidget to avoid jarring page transition
 - color theory
 - make schedule input box taller
 - During break show completed tasks
-- update tasks input to use project instead of priority
+- change available project colors to less bright colors
+- task window warnings background must be manually set as currently transparent=black

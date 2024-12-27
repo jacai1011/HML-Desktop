@@ -12,10 +12,12 @@ class TaskDisplay(QWidget):
         super().__init__()
         self.db_handler = DatabaseHandler()
         self.data_submitted = False
-        self.setFixedHeight(400)
+        self.setFixedHeight(300)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 10, 20, 10)
+        
+        self.color = "#D3D3D3"
 
         self.top_layout = QHBoxLayout()
         # self.middle_layout = QHBoxLayout()
@@ -38,7 +40,7 @@ class TaskDisplay(QWidget):
         rect = self.rect().adjusted(5, 5, -5, -5)
 
         # Background Color
-        background_color = Qt.GlobalColor.lightGray
+        background_color = QColor(self.color)
 
         # Fill rectangle with chosen background color
         painter.setBrush(QBrush(background_color, Qt.BrushStyle.SolidPattern))
@@ -58,6 +60,10 @@ class TaskDisplay(QWidget):
     def update_display(self, input_data):
         self.input_data = input_data
         self.data_submitted = True
+        
+        self.project_color = self.db_handler.get_project_color(self.input_data[3])
+        self.color = self.project_color[0]
+        
         self.update()
         
         # Delete Button

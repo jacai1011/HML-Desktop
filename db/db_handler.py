@@ -50,7 +50,7 @@ class DatabaseHandler:
                     task_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     category_id INTEGER,
                     title TEXT NOT NULL,
-                    project_id INTEGER,
+                    project_id INTEGER NOT NULL,
                     FOREIGN KEY (category_id) REFERENCES categories(category_id),
                     FOREIGN KEY (project_id) REFERENCES projects(project_id)
                 );
@@ -170,6 +170,11 @@ class DatabaseHandler:
         sql = f"SELECT task_id, category_id, title, project_id FROM tasks WHERE category_id = '{category_id}' ORDER BY project_id"
         result = self.search_all_execute(sql=sql)
         return result
+
+    def get_task_by_project_and_category(self, category_id, project_id):
+        sql = f"SELECT task_id, category_id, title, project_id FROM tasks WHERE category_id = '{category_id}' AND project_id = '{project_id}'"
+        result = self.search_all_execute(sql=sql)
+        return result
     
     def delete_task(self, task_id):
         sql = f"DELETE FROM tasks WHERE task_id = '{task_id}'"
@@ -223,13 +228,13 @@ class DatabaseHandler:
         return result
 
     def insert_project(self, project_name, project_color, category_id):
-        sql = f"""INSERT INTO projects (category_id, title, project_id) 
+        sql = f"""INSERT INTO projects (project_name, project_color, category_id) 
                 VALUES ('{project_name}', '{project_color}', '{category_id}')""" 
         result = self.insert_execute(sql=sql)
         return result
     
     def get_all_projects_by_category(self, category_id):
-        sql = f"SELECT project_name, project_color FROM projects WHERE category_id = '{category_id}'"
+        sql = f"SELECT project_id, project_name, project_color FROM projects WHERE category_id = '{category_id}'"
         result = self.search_all_execute(sql=sql)
         return result
 
@@ -239,7 +244,22 @@ class DatabaseHandler:
         vacuum_sql = "VACUUM;"
         self.insert_execute(sql=vacuum_sql)
         return result
-        
+    
+    def get_new_project(self):
+        sql = "SELECT * FROM projects ORDER BY project_id DESC LIMIT 1"
+        result = self.search_one_execute(sql=sql)
+        return result
+
+    def get_project_color(self, project_id):
+        sql = f"SELECT project_color FROM projects WHERE project_id='{project_id}'"
+        result = self.search_one_execute(sql=sql)
+        return result
+    
+    def get_project_id(self, project_name):
+        sql = f"SELECT project_id FROM projects WHERE project_name='{project_name}'"
+        result = self.search_one_execute(sql=sql)
+        return result
+    
     # delete all at end of day
     def delete_all(self):
         delete_sql = "DELETE FROM schedules WHERE repeatable != 'True'"

@@ -46,6 +46,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.scrollArea.setMaximumSize(800, 1100)
 
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setStyleSheet("background: transparent;")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scroll_layout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.scroll_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
@@ -65,6 +66,7 @@ class TaskList(QtWidgets.QMainWindow):
         self.scrollArea1.setMaximumSize(800, 1100)
 
         self.scrollAreaWidgetContents1 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents1.setStyleSheet("background: transparent;")
         self.scrollArea1.setWidget(self.scrollAreaWidgetContents1)
         self.scroll_layout1 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents1)
         self.scroll_layout1.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
@@ -92,11 +94,13 @@ class TaskList(QtWidgets.QMainWindow):
         
         self.set_background_image()
 
-        self.input_data = self.db_handler.load_saved_tasks_by_project(1)
+        self.cat_id = self.db_handler.get_category_id("Productivity")
+        self.input_data = self.db_handler.load_saved_tasks_by_project(self.cat_id[0])
         for entry in self.input_data:
             self.load_saved_work_tasks(entry)
 
-        self.input_data = self.db_handler.load_saved_tasks_by_project(3)
+        self.cat_id = self.db_handler.get_category_id("Leisure")
+        self.input_data = self.db_handler.load_saved_tasks_by_project(self.cat_id[0])
         for entry in self.input_data:
             self.load_saved_leisure_tasks(entry)
             
@@ -105,12 +109,10 @@ class TaskList(QtWidgets.QMainWindow):
             TaskList {
                 background-image: url('icons/Capture.PNG');
             }
+            
             QScrollArea {
                 background: transparent;
                 border: none;
-            }
-            QScrollArea QWidget {
-                background: transparent;
             }
             QScrollArea QScrollBar {
                 border: none;
@@ -121,19 +123,23 @@ class TaskList(QtWidgets.QMainWindow):
         """)
 
     def add_new_work_task(self):
-        new_widget = TaskDisplay(input_data=None,category=1)
+        self.cat_id = self.db_handler.get_category_id("Productivity")
+        new_widget = TaskDisplay(input_data=None,category=self.cat_id[0])
         self.scroll_layout.addWidget(new_widget)
 
     def add_new_leisure_task(self):
-        new_widget = TaskDisplay(input_data=None,category=3)
+        self.cat_id = self.db_handler.get_category_id("Leisure")
+        new_widget = TaskDisplay(input_data=None,category=self.cat_id[0])
         self.scroll_layout1.addWidget(new_widget)
 
     def load_saved_work_tasks(self, input_data):
-        new_widget = TaskDisplay(input_data=input_data, category=1)
+        self.cat_id = self.db_handler.get_category_id("Productivity")
+        new_widget = TaskDisplay(input_data=input_data, category=self.cat_id[0])
         self.scroll_layout.addWidget(new_widget)
 
     def load_saved_leisure_tasks(self, input_data):
-        new_widget = TaskDisplay(input_data=input_data, category=3)
+        self.cat_id = self.db_handler.get_category_id("Leisure")
+        new_widget = TaskDisplay(input_data=input_data, category=self.cat_id[0])
         self.scroll_layout1.addWidget(new_widget)
     
     def open_schedule_list(self):

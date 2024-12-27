@@ -2,15 +2,20 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from db.db_handler import DatabaseHandler
 import sys
 
-class ProjectTag(QtWidgets.QPushButton):  # Inherit from QPushButton
+class ProjectTag(QtWidgets.QPushButton):
+    project_add = QtCore.pyqtSignal(int)
 
-    def __init__(self, category_id=None, project_id=None, color=None, parent=None):
+    def __init__(self, input_data=None, parent=None):
         super(ProjectTag, self).__init__(parent)
         
-        self.category = category_id
-        self.project = project_id
-        self.color = color
-        self.project_name = project_id
+        self.db_handler = DatabaseHandler()
+        self.id = input_data[0]
+        self.color = input_data[2]
+        self.project_name = input_data[1]
+        self.hover = False
+        self.repaint = False
+        
+        self.setCheckable(True)
 
         # Set font and calculate text size
         self.font = QtGui.QFont("Arial", 16)
@@ -69,16 +74,24 @@ class ProjectTag(QtWidgets.QPushButton):  # Inherit from QPushButton
         rect = QtCore.QRect(5, 5, text_width + 2 * horizontal_padding, text_height + 2 * vertical_padding)
 
         # Background Color
-        background_color = QtGui.QColor(self.color)
+        if self.hover == False:
+            if self.isChecked() and self.repaint == False:
+                widget_color = self.color
+            else:
+                widget_color = self.darken_color(self.color, 0.6)
+        else:
+            widget_color = self.darken_color(self.color, 0.8)
+        
+        background_color = QtGui.QColor(widget_color)
 
         # Fill rectangle with chosen background color
         painter.setBrush(QtGui.QBrush(background_color, QtCore.Qt.BrushStyle.SolidPattern))
 
         # Border
-        painter.setPen(QtGui.QPen(background_color, 3, QtCore.Qt.PenStyle.SolidLine))
+        painter.setPen(QtGui.QPen(background_color, 2, QtCore.Qt.PenStyle.SolidLine))
 
         # Corner radius
-        corner_radius = 7
+        corner_radius = 10
         painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
         # Draw the project name text
@@ -93,7 +106,42 @@ class ProjectTag(QtWidgets.QPushButton):  # Inherit from QPushButton
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-        print(f"ProjectTag clicked: {self.project_name}")
+        self.hover = False
+        if self.isChecked() and self.repaint == False:
+            self.repaint = True
+        elif self.repaint == True:
+            self.repaint = False
+        else:
+            self.project_add.emit(self.id)
+            
+        self.update()
 
     def handle_delete(self):
-        print(f"Delete clicked for: {self.project_name}")
+        self.db_handler.delete_project(self.id)
+        self.close()
+
+    def enterEvent(self, event):
+        self.hover = True
+        self.update()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.hover = False
+        self.update()
+        super().leaveEvent(event)
+
+    def darken_color(self, hex_color, factor):
+        hex_color = hex_color.lstrip('#')
+        
+        r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+        
+        r = int(r * factor)
+        g = int(g * factor)
+        b = int(b * factor)
+        
+        r = max(0, min(255, r))
+        g = max(0, min(255, g))
+        b = max(0, min(255, b))
+        
+        # Convert back to hex and return
+        return f"#{r:02x}{g:02x}{b:02x}"
