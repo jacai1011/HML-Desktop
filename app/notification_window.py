@@ -6,7 +6,7 @@ from app.widgets.notif_widgets.notif_display import NotifDisplay
 
 from datetime import datetime
 import math
-import os
+# import os
 
 class NotificationWindow(QMainWindow):
 
@@ -109,13 +109,13 @@ class NotificationWindow(QMainWindow):
                 old_widget = self.msg_layout.takeAt(1).widget()
                 old_widget.deleteLater()
                 self.msg_layout.addWidget(new_widget)
-                self.show_system_notification()
+                # self.show_system_notification()
                 self.update = True
             else:
                 self.update = False
         else:
             self.msg_layout.addWidget(new_widget)
-            self.show_system_notification()
+            # self.show_system_notification()
             self.update = True
 
         self.category = self.db_handler.get_category_by_id(self.current_schedule[1])
@@ -202,7 +202,7 @@ class NotificationWindow(QMainWindow):
             }
         """)
 
-    def show_system_notification(self):
-        os.system(
-            'powershell.exe -Command "New-BurntToastNotification -Text \'Notification Title\', \'This is the content of the notification.\'"'
-        )
+    # def show_system_notification(self):
+    #     os.system(
+    #         'powershell.exe -Command "New-BurntToastNotification -Text \'Notification Title\', \'This is the content of the notification.\'"'
+    #     )
