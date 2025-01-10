@@ -12,7 +12,6 @@ class InputRectangleDisplay(QWidget):
         super().__init__()
         self.db_handler = DatabaseHandler()
         self.data_submitted = False
-        self.setFixedHeight(270)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 10, 20, 10)
@@ -65,11 +64,6 @@ class InputRectangleDisplay(QWidget):
         corner_radius = 7
         painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
-        # Text
-        painter.setPen(QPen(Qt.GlobalColor.black))
-        font = QFont("Arial", 16)
-        painter.setFont(font)
-
     def update_display(self, input_data):
         self.input_data = input_data
         self.data_submitted = True
@@ -100,7 +94,7 @@ class InputRectangleDisplay(QWidget):
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.time_label.setStyleSheet("""
             QLabel {
-                font-size: 20px;
+                font-size: 25px;
             }
         """)
         self.top_layout.addWidget(self.time_label)
@@ -113,7 +107,7 @@ class InputRectangleDisplay(QWidget):
         title_label = QLabel(f"{title}")
         title_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 35px;
             }
         """)
         self.middle_layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignTop)
@@ -136,9 +130,7 @@ class InputRectangleDisplay(QWidget):
         self.request_reposition(position)
         
     def on_delete(self):
-        self.db_handler.delete_task(self.input_data[0])
-        output = self.db_handler.get_all_tasks()
-        print(output)
+        self.db_handler.delete_schedule(self.input_data[0])
         self.close()
     
     def get_start_time(self):

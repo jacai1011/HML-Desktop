@@ -8,37 +8,15 @@ Requirements List
 
 
 Systems
-- RDBMS -> SQLite
-- Workstation –> WSL2
-- Workflow Mgmt -> Github
-- Backend -> Python
-- GUI -> PyQt6
-
-Libraries
-- Desktop UI
-    - PyQt
-
-Database Schema
-
-Tasks
-- task_id
-- category_id
-- title
-- repeatable
-- start_time
-- end_time
-- duration
-
-Categories
-- category_id
-- category
-
-Maybe needed to run:
-- export DISPLAY=$(grep -oP '(?<=nameserver\s).+' /etc/resolv.conf):0
-- export QT_QPA_PLATFORM=xcb
-- export QT_XCB_GL_INTEGRATION=none
-
+- RDBMS: SQLite
+- Workstation: WSL2 VSCode
+- Workflow Mgmt: Github
+- Backend: Python
+- GUI: PyQt6
+- OS: Windows
+  
 Todo
-- add button that links to schedule list overview for each page
-- add auto break timer for productivity
-- cleanup ui for schedule input
+- Add Dark Mode
+- Cleanup GUI
+- Add end of day reset schedules
+- Implement daily repeatable

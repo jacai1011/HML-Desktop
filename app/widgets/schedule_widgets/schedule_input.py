@@ -15,6 +15,9 @@ class InputDialog(QtWidgets.QWidget):
 
         self.am_pm_start_state = "AM" 
         self.am_pm_end_state = "AM"
+        
+        font = QtGui.QFont("Arial", 14, QtGui.QFont.Weight.Bold)
+        self.setFont(font)
 
         self.layout = QtWidgets.QVBoxLayout(self)
 
@@ -26,11 +29,13 @@ class InputDialog(QtWidgets.QWidget):
                 padding: 10px;
                 border: 2px solid black;
                 border-radius: 5px;
+                font-size: 25px;
             }
         """
         self.task_input.setStyleSheet(line_style)
-        self.layout.addWidget(QtWidgets.QLabel("Activity Title:"))
+        self.layout.addWidget(QtWidgets.QLabel("Schedule Title:"))
         self.layout.addWidget(self.task_input)
+        
         
         # Time box
         time_style = """
@@ -38,6 +43,8 @@ class InputDialog(QtWidgets.QWidget):
                 background-color: white;
                 border: 2px solid black;
                 border-radius: 5px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 30px;
             }
         """
         
@@ -61,8 +68,14 @@ class InputDialog(QtWidgets.QWidget):
         self.start_min.setValidator(validator)
         self.start_hr.setMaxLength(2)
         self.start_min.setMaxLength(2)
-        self.start_hr.setFixedWidth(40)
-        self.start_min.setFixedWidth(40)
+
+        font_metrics = self.start_hr.fontMetrics()
+        char_width = font_metrics.boundingRect("0").width()
+        padding = 20
+        max_width = (char_width * self.start_hr.maxLength()) + padding
+        
+        self.start_hr.setFixedWidth(max_width)
+        self.start_min.setFixedWidth(max_width)
         self.am_pm_start = AmPmButtonWidget(self)
         self.am_pm_start.time_selected.connect(self.handle_start_state)
         self.am_pm_start.setFixedSize(self.am_pm_start.sizeHint())
@@ -90,8 +103,9 @@ class InputDialog(QtWidgets.QWidget):
         self.end_min.setValidator(validator)
         self.end_hr.setMaxLength(2)
         self.end_min.setMaxLength(2)
-        self.end_hr.setFixedWidth(40)
-        self.end_min.setFixedWidth(40)
+        self.end_hr.setFixedWidth(max_width)
+        self.end_min.setFixedWidth(max_width)
+
         self.am_pm_end = AmPmButtonWidget(self)
         self.am_pm_end.time_selected.connect(self.handle_end_state)
         self.am_pm_end.setFixedSize(self.am_pm_end.sizeHint())
@@ -104,7 +118,6 @@ class InputDialog(QtWidgets.QWidget):
         # Labels box
         self.label_layout = QtWidgets.QHBoxLayout()
         self.category_button = QtWidgets.QComboBox(self)
-        self.category_button.setFixedSize(180, 40)
         self.category_button.setPlaceholderText("Category")
         self.category_button.addItems(["Work", "Leisure", "Routine", "Productivity"])
         self.category_button.setStyleSheet("""
@@ -113,6 +126,7 @@ class InputDialog(QtWidgets.QWidget):
                 border-radius: 5px;
                 padding: 5px;
                 background-color: white;
+                font-size: 30px;
             }
             QComboBox::drop-down {
                 border: 0px;
@@ -142,6 +156,7 @@ class InputDialog(QtWidgets.QWidget):
                 padding: 10px;
                 border: 2px solid black;
                 border-radius: 5px;
+                font-size: 30px;
             }
             QPushButton:hover {
                 background-color: lightgrey;
@@ -160,7 +175,7 @@ class InputDialog(QtWidgets.QWidget):
         self.layout.addLayout(self.button_layout)
         
         self.setLayout(self.layout)
-    
+        
     def on_ok(self):
         task_name = self.task_input.text()
         start_hour = self.handle_time_output(self.start_hr.text())
@@ -170,8 +185,6 @@ class InputDialog(QtWidgets.QWidget):
         category = self.category_button.currentText()
         start_time = self.convert_24(start_hour, start_minute, self.am_pm_start_state)
         end_time = self.convert_24(end_hour, end_minute, self.am_pm_end_state)
-        print(start_time)
-        print(end_time)
         datetime1 = datetime.combine(datetime.today(), start_time)
         datetime2 = datetime.combine(datetime.today(), end_time)
         if datetime2 < datetime1:
@@ -187,13 +200,13 @@ class InputDialog(QtWidgets.QWidget):
                 if check_time[0] or check_time[1]:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                 else:
-                    check = self.db_handler.insert_task(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
+                    check = self.db_handler.insert_schedule(self.category_id, task_name, self.repeatable_toggle.isChecked(), start_time, end_time, time_difference)
                     if check:
                         QtWidgets.QMessageBox.warning(self, "Input Error", "Timeslot taken")
                     else:
-                        output = self.db_handler.get_all_tasks()
+                        output = self.db_handler.get_all_schedules()
                         print(output)
-                        input_data = self.db_handler.get_all_tasks()[-1]
+                        input_data = self.db_handler.get_all_schedules()[-1]
                         self.submitted.emit(input_data)
                         self.close()
         else:
@@ -224,5 +237,3 @@ class InputDialog(QtWidgets.QWidget):
         elif ap == 'AM' and hr == 12:
             hr = hr - 12
         return time(hr, mi)
-
-    

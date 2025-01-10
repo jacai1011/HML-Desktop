@@ -12,13 +12,13 @@ class TaskDisplay(QWidget):
         super().__init__()
         self.db_handler = DatabaseHandler()
         self.data_submitted = False
-        self.setFixedHeight(270)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 10, 20, 10)
+        
+        self.color = "#D3D3D3"
 
         self.top_layout = QHBoxLayout()
-        # self.middle_layout = QHBoxLayout()
         self.setLayout(self.layout)
 
         if input_data:
@@ -38,8 +38,7 @@ class TaskDisplay(QWidget):
         rect = self.rect().adjusted(5, 5, -5, -5)
 
         # Background Color
-
-        background_color = Qt.GlobalColor.lightGray
+        background_color = QColor(self.color)
 
         # Fill rectangle with chosen background color
         painter.setBrush(QBrush(background_color, Qt.BrushStyle.SolidPattern))
@@ -51,14 +50,16 @@ class TaskDisplay(QWidget):
         corner_radius = 7
         painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
-        # Text
-        painter.setPen(QPen(Qt.GlobalColor.black))
-        font = QFont("Arial", 16)
-        painter.setFont(font)
-
     def update_display(self, input_data):
         self.input_data = input_data
         self.data_submitted = True
+        
+        self.project_color = self.db_handler.get_project_color(self.input_data[3])
+        if self.input_data[3] == 1:
+            self.color = QColor(135, 206, 235)
+        else:
+            self.color = self.project_color[0]
+        
         self.update()
         
         # Delete Button
@@ -79,7 +80,7 @@ class TaskDisplay(QWidget):
         title_label = QLabel(f"{title}")
         title_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 35px;
             }
         """)
         self.top_layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignTop)
@@ -91,5 +92,5 @@ class TaskDisplay(QWidget):
 
 
     def on_delete(self):
-        self.db_handler.delete_project(self.input_data[0])
+        self.db_handler.delete_task(self.input_data[0])
         self.close()
