@@ -12,7 +12,6 @@ class TaskDisplay(QWidget):
         super().__init__()
         self.db_handler = DatabaseHandler()
         self.data_submitted = False
-        self.setFixedHeight(300)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 10, 20, 10)
@@ -20,7 +19,6 @@ class TaskDisplay(QWidget):
         self.color = "#D3D3D3"
 
         self.top_layout = QHBoxLayout()
-        # self.middle_layout = QHBoxLayout()
         self.setLayout(self.layout)
 
         if input_data:
@@ -52,17 +50,15 @@ class TaskDisplay(QWidget):
         corner_radius = 7
         painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
-        # Text
-        painter.setPen(QPen(Qt.GlobalColor.black))
-        font = QFont("Arial", 16)
-        painter.setFont(font)
-
     def update_display(self, input_data):
         self.input_data = input_data
         self.data_submitted = True
         
         self.project_color = self.db_handler.get_project_color(self.input_data[3])
-        self.color = self.project_color[0]
+        if self.input_data[3] == 1:
+            self.color = QColor(135, 206, 235)
+        else:
+            self.color = self.project_color[0]
         
         self.update()
         
@@ -84,7 +80,7 @@ class TaskDisplay(QWidget):
         title_label = QLabel(f"{title}")
         title_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 35px;
             }
         """)
         self.top_layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignTop)

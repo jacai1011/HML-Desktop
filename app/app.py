@@ -1,23 +1,24 @@
 import sys
 from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtCore import QSize
 
 from app.widgets.schedule_widgets.schedule_display import InputRectangleDisplay
 from db.db_handler import DatabaseHandler
 from app.task_list import TaskList
-
+import os
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Today's Schedule")
-        self.showFullScreen()
+        self.resize(800, 600)
+        self.showMaximized()
 
         self.db_handler = DatabaseHandler()
         self.db_handler.init_database()
         self.db_handler.insert_categories()
+        cat_id = self.db_handler.get_category_id("Leisure")
+        self.db_handler.insert_gaming_project_holder(cat_id[0])
         
         self.centralwidget = QtWidgets.QWidget(self)
         self.setCentralWidget(self.centralwidget)
@@ -39,7 +40,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.pushButton = QtWidgets.QPushButton("Add Schedule", self.centralwidget)
         self.pushButton.setStyleSheet(button_style)
-        self.pushButton.setFixedSize(201, 61) 
+
         self.pushButton.clicked.connect(self.add_new_block)
 
         self.verticalLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -111,6 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 color: black;
             }
         """)
+
 
 
 app = QtWidgets.QApplication(sys.argv)

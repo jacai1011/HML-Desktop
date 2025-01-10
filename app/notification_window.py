@@ -1,12 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QMainWindow, QScrollArea
-from PyQt6.QtCore import Qt, QSize, pyqtSignal, QTimer, QRect
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QMainWindow, QScrollArea, QSpacerItem
+from PyQt6.QtCore import Qt, QTimer, QRect
 from db.db_handler import DatabaseHandler
 from app.widgets.notif_widgets.project_display import ProjectDisplay
 from app.widgets.notif_widgets.notif_display import NotifDisplay
+# from win11toast import notify
 
 from datetime import datetime
 import math
-# import os
 
 class NotificationWindow(QMainWindow):
 
@@ -14,7 +14,7 @@ class NotificationWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Notification Page")
-        self.setFixedSize(900, 650)
+        self.setFixedSize(1100, 800)
         self.center()
         self.parent_window = parent
 
@@ -27,6 +27,8 @@ class NotificationWindow(QMainWindow):
         
         self.msg_layout = QVBoxLayout()
         layout.addLayout(self.msg_layout)
+        spacer = QSpacerItem(20, 50)
+        layout.addItem(spacer)
         self.dynamic_layout = QVBoxLayout()
         layout.addLayout(self.dynamic_layout)
         self.time_layout = QVBoxLayout()
@@ -53,7 +55,7 @@ class NotificationWindow(QMainWindow):
         self.schedule_label = QLabel(self)
         self.schedule_label.setStyleSheet("""
             QLabel {
-                font-size: 40px;
+                font-size: 50px;
             }
         """)
         self.msg_layout.addWidget(self.schedule_label, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -61,14 +63,13 @@ class NotificationWindow(QMainWindow):
         self.time_label = QLabel(self)
         self.time_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 40px;
             }
         """)
         self.time_layout.addWidget(self.time_label, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         self.backButton = QPushButton("Schedules", self.centralwidget)
         self.backButton.setStyleSheet(button_style)
-        self.backButton.setFixedSize(131, 61) 
         self.backButton.clicked.connect(self.open_schedule_list)
         
         self.button_layout.addWidget(self.backButton, alignment=Qt.AlignmentFlag.AlignRight)
@@ -108,14 +109,16 @@ class NotificationWindow(QMainWindow):
             if old_widget.get_name() != new_widget.get_name():
                 old_widget = self.msg_layout.takeAt(1).widget()
                 old_widget.deleteLater()
+                if self.category[0] == "Productivity":
+                    self.clear_layout(self.project_layout)
                 self.msg_layout.addWidget(new_widget)
-                # self.show_system_notification()
+                self.show_system_notification(self.current_schedule[2])
+                self.clear_layout(self.dynamic_layout)
                 self.update = True
             else:
                 self.update = False
         else:
             self.msg_layout.addWidget(new_widget)
-            # self.show_system_notification()
             self.update = True
 
         self.category = self.db_handler.get_category_by_id(self.current_schedule[1])
@@ -128,33 +131,45 @@ class NotificationWindow(QMainWindow):
                 if widget:
                     widget.setParent(None)
             self.project_layout = QHBoxLayout()
+
+            # Project Current Label
             self.project_current = QLabel(self)
             self.project_current.setStyleSheet("""
                 QLabel {
-                    font-size: 30px;
+                    font-size: 40px;
                 }
             """)
-
             self.project_current.setText("Current Project:")
             self.project_layout.addWidget(self.project_current)
+
             self.project_dropdown = QComboBox(self)
-            self.project_dropdown.setPlaceholderText("Project")
+            self.project_dropdown.setPlaceholderText("...")
             self.projects = self.db_handler.get_all_projects_by_category(self.current_schedule[1])
             self.project_dropdown.addItems([item[1] for item in self.projects])
+            font_metrics = self.project_dropdown.fontMetrics()
+            max_width = max(font_metrics.boundingRect(self.project_dropdown.itemText(i)).width()
+                            for i in range(self.project_dropdown.count()))
+            self.project_dropdown.setFixedWidth(max_width + 40)
             self.project_dropdown.currentTextChanged.connect(self.display_projects)
             self.project_layout.addWidget(self.project_dropdown)
+
             self.project_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dynamic_layout.addLayout(self.project_layout)
-            
+
             self.scrollArea = QScrollArea(self.centralWidget())
             self.scrollArea.setWidgetResizable(True)
-            self.scrollArea.setMaximumHeight(110)
+            self.scrollArea.setFixedHeight(110)
+
             self.scrollAreaWidgetContents = QWidget()
             self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
             self.scroll_layout = QVBoxLayout(self.scrollAreaWidgetContents)
+            self.scrollAreaWidgetContents.setLayout(self.scroll_layout)
+
             self.dynamic_layout.addWidget(self.scrollArea)
 
-            
+            self.dynamic_layout.addStretch()
+                        
         if total_seconds > 3600:
             hours = int(total_seconds // 3600)
             message = f"Your {self.category[0]} block will end in {hours} hours and {minutes} minutes"
@@ -201,8 +216,7 @@ class NotificationWindow(QMainWindow):
                 border: none;
             }
         """)
-
-    # def show_system_notification(self):
-    #     os.system(
-    #         'powershell.exe -Command "New-BurntToastNotification -Text \'Notification Title\', \'This is the content of the notification.\'"'
-    #     )
+        
+    def show_system_notification(self, schedule_title):
+        msg = f"{schedule_title}"
+        # notify('Next Schedule Reminder', msg)

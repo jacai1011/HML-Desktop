@@ -11,9 +11,12 @@ class TaskInput(QtWidgets.QWidget):
         super().__init__(parent)
         self.category = category_id
         self.db_handler = DatabaseHandler()
-        self.setMaximumHeight(300)
         self.layout = QtWidgets.QVBoxLayout(self)
         
+        self.category_name = self.db_handler.get_category_by_id(self.category)
+        
+        font = QtGui.QFont("Arial", 14, QtGui.QFont.Weight.Bold)
+        self.setFont(font)
         self.project_tag = None
 
         line_style = """
@@ -22,6 +25,7 @@ class TaskInput(QtWidgets.QWidget):
                 padding: 10px;
                 border: 2px solid black;
                 border-radius: 5px;
+                font-size: 25px;
             }
         """
         # Activity Title
@@ -30,24 +34,29 @@ class TaskInput(QtWidgets.QWidget):
         self.layout.addWidget(QtWidgets.QLabel("Title:"))
         self.layout.addWidget(self.task_input)
         
-        self.layout.addWidget(QtWidgets.QLabel("Project:"))
+        if self.category_name[0] == "Productivity":
         
-        self.project_layout = QtWidgets.QHBoxLayout()
-        self.project_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-
-        self.button_group = QtWidgets.QButtonGroup(self)
-        self.button_group.setExclusive(True)
-        
-        self.input_data = self.db_handler.get_all_projects_by_category(self.category)
-        if self.input_data:
-            for entry in self.input_data:
-                self.load_saved_projects(entry)
-
-        self.add_project_button = AddProject("New Project", category_id=self.category)
-        self.project_layout.addWidget(self.add_project_button)
-        self.add_project_button.update_screen.connect(self.update_new_project)
+            self.layout.addWidget(QtWidgets.QLabel("Project:"))
             
-        self.layout.addLayout(self.project_layout)
+            self.project_layout = QtWidgets.QHBoxLayout()
+            self.project_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+
+            self.button_group = QtWidgets.QButtonGroup(self)
+            self.button_group.setExclusive(True)
+            
+            self.input_data = self.db_handler.get_all_projects_by_category(self.category)
+            if self.input_data:
+                for entry in self.input_data:
+                    self.load_saved_projects(entry)
+
+            self.add_project_button = AddProject("New Project", category_id=self.category)
+            self.add_project_button.setStyleSheet(line_style)
+            self.project_layout.addWidget(self.add_project_button)
+            self.add_project_button.update_screen.connect(self.update_new_project)
+                
+            self.layout.addLayout(self.project_layout)
+
+  
 
         self.button_layout = QtWidgets.QHBoxLayout()
         self.ok_button = QtWidgets.QPushButton("Add Task", self)
@@ -81,15 +90,17 @@ class TaskInput(QtWidgets.QWidget):
 
     def on_ok(self):
         task_name = self.task_input.text()
-        proj_id = self.project_tag
         proj_category = self.category
+        if self.category_name[0] == "Productivity":
+            proj_id = self.project_tag
+        else:
+            proj_id = 1
         if task_name and proj_id and proj_category:
             check = self.db_handler.insert_task(proj_category, task_name, proj_id)
             if check:
                 QtWidgets.QMessageBox.warning(self, "Input Error", "Task Name taken")
             else:
                 output = self.db_handler.get_all_tasks_by_category(proj_category)
-                print(output)
                 input_data = self.db_handler.get_all_tasks_by_category(proj_category)[-1]
                 self.submitted.emit(input_data)
                 self.close()

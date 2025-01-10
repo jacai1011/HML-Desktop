@@ -22,11 +22,25 @@ class ProjectDisplay(QWidget):
         title_label = QLabel(f"{title}")
         title_label.setStyleSheet("""
             QLabel {
-                font-size: 30px;
+                font-size: 40px;
             }
         """)
+
+        button_style = """
+            QPushButton {
+                background-color: white;
+                padding: 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: lightgrey;
+            }
+        """
+        
         complete_button = QPushButton("Done")
-        complete_button.setFixedSize(61, 61) 
+        complete_button.setStyleSheet(button_style)
+        complete_button.setFixedWidth(170)
         complete_button.clicked.connect(self.complete_task)
         
         self.layout.addWidget(title_label, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -55,10 +69,6 @@ class ProjectDisplay(QWidget):
         corner_radius = 7
         painter.drawRoundedRect(rect, corner_radius, corner_radius)
 
-        # Text
-        painter.setPen(QPen(Qt.GlobalColor.black))
-        font = QFont("Arial", 16)
-        painter.setFont(font)
     
     def complete_task(self):
         self.db_handler.delete_task(self.input_data[0])

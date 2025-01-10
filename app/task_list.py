@@ -8,7 +8,7 @@ class TaskList(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
         self.setWindowTitle("Task Page")
-        self.showFullScreen()
+        self.showMaximized()
         self.parent_window = parent
 
         self.db_handler = DatabaseHandler()
@@ -36,7 +36,6 @@ class TaskList(QtWidgets.QMainWindow):
         
         self.pushButton = QtWidgets.QPushButton("Add Work Task", self.centralwidget)
         self.pushButton.setStyleSheet(button_style)
-        self.pushButton.setFixedSize(201, 61)
         self.pushButton.clicked.connect(self.add_new_work_task)
 
         self.verticalLayout1.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -56,7 +55,6 @@ class TaskList(QtWidgets.QMainWindow):
 
         self.pushButton1 = QtWidgets.QPushButton("Add Leisure Task", self.centralwidget)
         self.pushButton1.setStyleSheet(button_style)
-        self.pushButton1.setFixedSize(201, 61)
         self.pushButton1.clicked.connect(self.add_new_leisure_task)
 
         self.verticalLayout2.addWidget(self.pushButton1, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)

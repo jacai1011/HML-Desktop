@@ -1,13 +1,23 @@
+import os
 import sqlite3
 from pathlib import Path
+import sys
 
 class DatabaseHandler:
     def __init__(self):
-        # Database setup
-        self.db_folder = "./db"
+        # Determine database folder and path dynamically
+        self.db_folder = self.resource_path("./db")
         self.db_path = f"{self.db_folder}/HML.db"
         self.connection = None
         self.cursor = None
+
+        Path(self.db_folder).mkdir(parents=True, exist_ok=True)
+
+    def resource_path(self, relative_path):
+        """Get the absolute path to a resource, adjusting for PyInstaller bundling."""
+        if hasattr(sys, "_MEIPASS"):
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.join(os.path.abspath("."), relative_path)
 
     def init_database(self):
         self.connector()
@@ -62,7 +72,7 @@ class DatabaseHandler:
 
         except Exception as e:
             self.connection.rollback()
-            print(e)
+            print(f"Error initializing database: {e}")
 
         finally:
             # Close the cursor and connection
@@ -75,7 +85,7 @@ class DatabaseHandler:
         # Establish a connection to the SQLite database
         self.connection = sqlite3.connect(self.db_path)
         self.cursor = self.connection.cursor()
-
+        
     def insert_execute(self, sql):
         self.connector()
         try:
@@ -117,6 +127,11 @@ class DatabaseHandler:
             
     def insert_categories(self):
         sql = f"INSERT OR IGNORE INTO categories (category_name) VALUES ('Work'), ('Leisure'), ('Routine'), ('Productivity')"
+        result = self.insert_execute(sql=sql)
+        return result
+
+    def insert_gaming_project_holder(self, category_id):
+        sql = f"INSERT OR IGNORE INTO projects (project_name, project_color, category_id) VALUES ('Gaming', '', {category_id})"
         result = self.insert_execute(sql=sql)
         return result
     

@@ -12,6 +12,19 @@ class ProjectDropdown(QtWidgets.QWidget):
         self.update_mask()
         
         self.setStyleSheet("background-color: white; border: 2px solid black; border-radius: 5px;")
+
+        button_style = """
+            QPushButton {
+                background-color: white;
+                padding: 5px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: lightgrey;
+            }
+        """
+        
         # Main layout
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setContentsMargins(10, 10, 10, 10)
@@ -19,7 +32,7 @@ class ProjectDropdown(QtWidgets.QWidget):
 
         # Name Input
         self.name_input = QtWidgets.QLineEdit(self)
-        self.name_input.setPlaceholderText("Name")
+        self.name_input.setPlaceholderText("Project Name")
         main_layout.addWidget(self.name_input)
 
         # Color Display and Hex Input
@@ -29,7 +42,7 @@ class ProjectDropdown(QtWidgets.QWidget):
         self.color_display.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.color_input = QtWidgets.QLineEdit("#000000", self)
-        self.color_input.setMaximumWidth(110)
+        self.color_input.setMaximumWidth(130)
 
         color_layout.addWidget(self.color_display)
         color_layout.addWidget(self.color_input)
@@ -39,8 +52,7 @@ class ProjectDropdown(QtWidgets.QWidget):
         self.color_grid = QtWidgets.QGridLayout()
         self.color_grid.setSpacing(5)
         self.colors = [
-            "#000000", "#808080", "#C0C0C0", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00",
-            "#FF00FF", "#00FFFF", "#FFA500", "#800080", "#008000", "#800000", "#808000", "#000080"
+            "#FF0000", "#33FF57", "#5733FF", "#FFD700", "#FF33A8", "#33FFF3", "#FF8C00", "#8A2BE2"
         ]
 
         for i, color in enumerate(self.colors):
@@ -55,9 +67,11 @@ class ProjectDropdown(QtWidgets.QWidget):
         # Action Buttons
         action_layout = QtWidgets.QHBoxLayout()
         back_button = QtWidgets.QPushButton("Back", self)
+        back_button.setStyleSheet(button_style)
         back_button.clicked.connect(self.close)
 
-        save_button = QtWidgets.QPushButton("Save tag", self)
+        save_button = QtWidgets.QPushButton("Save Tag", self)
+        save_button.setStyleSheet(button_style)
         save_button.clicked.connect(self.save_tag)
 
         action_layout.addWidget(back_button)
@@ -65,10 +79,10 @@ class ProjectDropdown(QtWidgets.QWidget):
         main_layout.addLayout(action_layout)
 
     def update_mask(self):
-        radius = 10  # Corner radius
-        rect = QtCore.QRectF(self.rect())  # Convert QRect to QRectF
+        radius = 10
+        rect = QtCore.QRectF(self.rect())
         path = QtGui.QPainterPath()
-        path.addRoundedRect(rect, radius, radius)  # Adjust radius for rounded corners
+        path.addRoundedRect(rect, radius, radius)
         mask = QtGui.QRegion(path.toFillPolygon(QtGui.QTransform()).toPolygon())
         self.setMask(mask)
 
