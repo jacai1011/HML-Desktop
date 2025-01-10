@@ -20,3 +20,5 @@ Todo
 - Cleanup GUI
 - Add end of day reset schedules
 - Implement daily repeatable
+
+pyinstaller --noconsole --icon=app_icon.ico main.py
