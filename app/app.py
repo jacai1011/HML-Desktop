@@ -123,3 +123,5 @@ window = MainWindow()
 window.show()
 
 sys.exit(app.exec())
+
+# pyinstaller --noconsole --icon=app_icon.ico main.py + copy icons folder into main
