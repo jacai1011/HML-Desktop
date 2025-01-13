@@ -1,22 +1,7 @@
-Requirements List
-- Database to store items
-- Desktop interface and UI
-- Desktop interactivity with items
-- Capability to track external app usage (ext: block websites)
-- Day overview
-- Instead of specifying work tasks cycle through a list throughout the day (add dropdown menu to choose task)
-
-
 Systems
-- RDBMS: SQLite
-- Workstation: WSL2 VSCode
-- Workflow Mgmt: Github
-- Backend: Python
+- RDBMS: SQLite3
 - GUI: PyQt6
+- Backend: Python 3.12
 - OS: Windows
-  
-Todo
-- Add Dark Mode
-- Cleanup GUI
-- Add end of day reset schedules
-- Implement daily repeatable
+
+Standalone Desktop App
