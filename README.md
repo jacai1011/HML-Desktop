@@ -4,4 +4,4 @@ Systems
 - Backend: Python 3.12
 - OS: Windows
 
-Standalone Desktop App
+Standalone Desktop for Daily Management
