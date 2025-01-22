@@ -4,4 +4,4 @@ Systems
 - Backend: Python 3.12
 - OS: Windows
 
-Standalone Desktop for Daily Management
+Standalone Desktop App for Daily Schedules and Project Management
